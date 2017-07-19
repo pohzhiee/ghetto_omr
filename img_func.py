@@ -24,12 +24,18 @@ def splitimg(im_inp,n_row,n_col):
     return img_frag
 
 
-def boundimg(im_inp)
+def boundimg(im_inp):
     # Select ROI
-    r = cv2.selectROI(im)
+    r = cv2.selectROI(im_inp)
 
     # Crop image
-    imCrop = im[int(r[1]):int(r[1] + r[3]), int(r[0]):int(r[0] + r[2])]
+    imCrop = im_inp[int(r[1]):int(r[1] + r[3]), int(r[0]):int(r[0] + r[2])]
 
     # return cropped image
     return imCrop
+
+def thres1(im_inp):
+    blurred = cv2.GaussianBlur(im_inp,(3,3),0)
+    thresh = cv2.threshold(blurred,150,255,cv2.THRESH_BINARY)[1]
+    thresh1 = cv2.threshold(blurred,60,255,cv2.THRESH_BINARY)[0]
+    return thresh
