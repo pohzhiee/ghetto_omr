@@ -21,3 +21,15 @@ def splitimg(im_inp,n_row,n_col):
             # cv2.imshow('image1', img_frag[i, j])
             # cv2.waitKey(0)
             # cv2.destroyAllWindows()
+    return img_frag
+
+
+def boundimg(im_inp)
+    # Select ROI
+    r = cv2.selectROI(im)
+
+    # Crop image
+    imCrop = im[int(r[1]):int(r[1] + r[3]), int(r[0]):int(r[0] + r[2])]
+
+    # return cropped image
+    return imCrop
