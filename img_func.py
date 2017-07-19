@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import matplotlib
 
 def splitimg(im_inp,n_row,n_col):
     #determine size of input image
@@ -34,8 +35,13 @@ def boundimg(im_inp):
     # return cropped image
     return imCrop
 
-def thres1(im_inp):
-    blurred = cv2.GaussianBlur(im_inp,(3,3),0)
+def thres1 (im_inp):
+    blurred = cv2.GaussianBlur(im_inp,(5,5),10)
     thresh = cv2.threshold(blurred,150,255,cv2.THRESH_BINARY)[1]
-    thresh1 = cv2.threshold(blurred,60,255,cv2.THRESH_BINARY)[0]
-    return thresh
+    return thresh, blurred
+
+
+def canny(im_inp):
+    edges = cv2.Canny(im_inp,100,200)
+
+    matplotlib.pyplot.subplot(121),matplotlib.pyplot.imshow
