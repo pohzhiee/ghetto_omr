@@ -3,7 +3,7 @@ import numpy as np
 
 if __name__ == '__main__':
     # Read image
-    im = cv2.imread("image.jpg")
+    im = cv2.imread("img_data/subaru.jpg")
 
     # Select ROI
     r = cv2.selectROI(im)
