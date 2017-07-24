@@ -28,37 +28,51 @@ im2, contours, hierarchy = cv2.findContours(closed, cv2.RETR_TREE, cv2.CHAIN_APP
 height, width = img.shape[:2]
 emptycanvas=np.zeros((height,width),dtype=np.uint8)
 
-x= np.array([])
+kcounter = 0
+for c in contours:
+
+    A = cv2.contourArea(c)
+
+    if A<200:
+        contours=np.delete(contours,kcounter,0)
+        kcounter=kcounter-1
+    kcounter=kcounter+1
+
+
+clen=len(contours)
+print clen
+matcharray=np.zeros((clen,clen),np.uint8)
 
 
 #loop over the contours
-for c in contours:
+icounter = 0
+for i in contours:
+    jcounter = 0
 
-    #Storing areas in an array
-    A = cv2.contourArea(c)
-    x = np.append(x, [A], axis=0)
+    for j in contours:
+    #Storing data in an array
+        ret=cv2.matchShapes(i,j,1,0.0)
+        if ret<0.01:
+            matcharray[icounter,jcounter]=1
+        else:
+            matcharray[icounter,jcounter]=0
+        jcounter=jcounter+1
+    icounter=icounter+1
 
-
-
-xsort=np.sort(x,axis=0,kind='mergesort')
-xlen=len(xsort)
-
-xmedian = xsort[xlen/2-1]
-print xmedian
-print xsort
-print xlen
-
-for c in contours:
-
-    A = cv2.contourArea(c)
-    if A<200:
-        if A>100:
-            cv2.drawContours(img2,[c],-1,(0,255,0),2)
-            cv2.imshow("CONTOUR",img2)
-
-
-plt.hist(xsort, [1,10,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500])
-plt.show()
-
+print matcharray
+sum_array=np.sum(matcharray,axis=1,dtype=np.int32)
+print sum_array
+counter_m=0
+n_true =0
+for i in sum_array:
+    print i
+    if i>1:
+        cv2.drawContours(img2, contours, counter_m, (0, 255, 0), 2)
+        n_true = n_true +1
+    counter_m = counter_m+1
+print '-----------'
+print n_true
+cv2.imshow("IMG",img2)
 cv2.waitKey(0)
+
 
