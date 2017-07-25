@@ -179,7 +179,7 @@ while arr_len>g:
 
 
 
-##checkpoint
+#checkpoint
 #print centpt_array
 print '-----------'
 #print valid_counter
