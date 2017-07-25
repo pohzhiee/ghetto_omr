@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 #Part 1: Image Loading
 #-------------------------------------------------------------------
 #load image
-img = cv2.imread('img_data/omstest2.jpg',cv2.IMREAD_GRAYSCALE)
-img2= cv2.imread('img_data/omstest2.jpg')
+img2= cv2.imread('img_data/omstest1.jpg')
 
 #bilateral filter, sharpen, thresh
 biblur=cv2.bilateralFilter(img,20,175,175)
@@ -67,7 +66,7 @@ for i in contours:
 
 #sum each row of the array (for TRUEs and FALSEs]
 sum_array=np.sum(match_array,axis=1,dtype=np.int32)
-
+print len(sum_array)
 #finding mean of the comparison value
 sum_array2=np.sum(sum_array,axis=0,dtype=np.int32)
 sum_array_len=len(sum_array)
