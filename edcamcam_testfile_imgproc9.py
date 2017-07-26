@@ -1,22 +1,23 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
+import math
 
 #Part 1: Image Loading
 #-------------------------------------------------------------------
+
 #load image
 img = cv2.imread('img_data/omstest2.jpg',cv2.IMREAD_GRAYSCALE)
 img2= cv2.imread('img_data/omstest2.jpg')
 img3=cv2.cvtColor(img,cv2.COLOR_GRAY2RGB)
-#bilateral filter, sharpen, thresh
+
+#bilateral filter, sharpen, thresh image
 biblur=cv2.bilateralFilter(img,20,175,175)
 sharp=cv2.addWeighted(img,1.55,biblur,-0.5,0)
 ret1,thresh1 = cv2.threshold(sharp,127,255,cv2.THRESH_OTSU)
 
-#negative image
+#negative and closed image
 inv=cv2.bitwise_not(thresh1)
-
-#closed image
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 closed = cv2.morphologyEx(inv, cv2.MORPH_CLOSE, kernel)
 
@@ -152,9 +153,6 @@ centpt_array=np.append(centpt_array,[[450,800,1002]],0)
 centpt_array=np.append(centpt_array,[[100,300,1003]],0)
 centpt_array=np.append(centpt_array,[[0,0,1004]],0)
 
-print centpt_array
-print '---------~'
-
 #Removing Duplicates
 g=0
 arr_len=len(centpt_array)
@@ -167,18 +165,12 @@ while arr_len>g:
 
         if abs(target_arr1[0]-target_arr2[0])<mean_hor_dist:
             if abs(target_arr1[1]-target_arr2[1])<mean_ver_dist:
-                print target_arr1
-                print target_arr2
-                print centpt_array[h]
-                print '-----------'
                 centpt_array=np.delete(centpt_array,h,0)
                 h=h-1
                 arr_len=arr_len-1
         h = h + 1
     g=g+1
 
-print centpt_array
-print '---------~'
 
 
 #Part3:Forming Grids
@@ -271,10 +263,7 @@ while h < len(cY_array):
             temp_var_counter=1
     h=h+1
 
-print cX_array
-print cY_array
-print grp_cX_array
-print grp_cY_array
+
 
 #set up grid m x n
 grid_row_len=len(grp_cY_array)
@@ -307,7 +296,6 @@ def SpaceFunc(matr):
     val_X_matrix_counter = np.zeros((matr_shape[0], matr_shape[1]), dtype=np.ndarray)
     val_Y_matrix_counter=np.zeros((matr_shape[0], matr_shape[1]), dtype=np.ndarray)
 
-    print matr.shape
 
     counter_g1 = 0
     while counter_g1 < matr_shape[1]:
@@ -315,7 +303,7 @@ def SpaceFunc(matr):
         while counter_g2 < matr_shape[0]:
             matr_value = matr[counter_g2, counter_g1]
             matr_value=np.asarray(matr_value)
-            print matr_value
+
             if matr_value.size==3:
                 val_X_matrix[counter_g2, counter_g1] = matr_value[0]
                 val_Y_matrix[counter_g2, counter_g1] = matr_value[1]
@@ -329,9 +317,6 @@ def SpaceFunc(matr):
             counter_g2 = counter_g2 + 1
         counter_g1 = counter_g1 + 1
 
-    print val_X_matrix
-    print val_Y_matrix
-
     val_X_array_counter = val_X_matrix_counter.sum(axis=0)
     val_Y_array_counter = val_Y_matrix_counter.sum(axis=1)
     val_X_array_acc = val_X_matrix.sum(axis=0)
@@ -339,18 +324,112 @@ def SpaceFunc(matr):
     val_X_array = val_X_array_acc/val_X_array_counter
     val_Y_array = val_Y_array_acc / val_Y_array_counter
 
-    print val_X_array
-    print val_Y_array
-
     spa_X_array=np.ediff1d(val_X_array)
     spa_Y_array=np.ediff1d(val_Y_array)
 
-    print spa_X_array
-    print spa_Y_array
+#Creating function to convert matrix to binary (those with value to 1, those with 0 to 0)
+def MatBinFunc(matr):
+    matr_shape = matr.shape
+    matr_bin=np.ones((matr_shape[0],matr_shape[1]),dtype=np.uint8)
 
+    counter_g1 = 0
+    while counter_g1 < matr_shape[1]:
+        counter_g2 = 0
+        while counter_g2 < matr_shape[0]:
+            matr_value = matr[counter_g2, counter_g1]
+            matr_value=np.asarray(matr_value)
+            if matr_value.size == 1:
+                if matr_value==0:
+                    matr_bin[counter_g2, counter_g1]=0
 
-SpaceFunc(matrix_grid)
+            counter_g2 = counter_g2 + 1
+        counter_g1 = counter_g1 + 1
+    return matr_bin
 
+#Creating a function to optimise a binary matrix to grid form of 1 x 1
+#Methodology:
+# 1)Sum rows and columns
+# 2)Forming matrix to determine the strength of each cells = (Row.value + Column.value)/2
+# 3)Find sum of strength of each column and row
+# 4)Defining parameters (
+def OptMatFunc(matr,degree):
+    row_sum=np.sum(matr,axis=1)
+    col_sum = np.sum(matr, axis=0)
+
+    matr_shape=matr.shape
+    str_matr=np.zeros((matr_shape[0],matr_shape[1]),dtype=np.uint16)
+
+    m=0
+    while m<matr_shape[0]:
+        n=0
+        while n<matr_shape[1]:
+            str_matr[m, n]=(row_sum[m]+col_sum[n]-2)*matr[m,n]
+            n=n+1
+        m=m+1
+
+    row_sum_str = np.sum(str_matr, axis=1)
+    col_sum_str = np.sum(str_matr, axis=0)
+    print str_matr
+    print row_sum_str
+    print col_sum_str
+
+    #calculate half of the strength marker (high and low)
+    str_marker_high = matr_shape[0]+matr_shape[1]- math.floor(float(matr_shape[0])/2)-math.floor(float(matr_shape[1])/2)-2
+    str_marker_low = matr_shape[0] + matr_shape[1] - math.ceil(float(matr_shape[0]) / 2) - math.ceil(float(matr_shape[1]) / 2) - 2
+
+    # calculate half of the strength multiplier (high and low)
+    row_str_multi_high=math.ceil(float(matr_shape[0])/2)
+    row_str_multi_low = math.floor(float(matr_shape[0])/2)
+    col_str_multi_high=math.ceil(float(matr_shape[1])/2)
+    col_str_multi_low = math.floor(float(matr_shape[1]) / 2)
+
+    #for parameter (only odd row or column will make a great difference due to floor and ceiling,
+    #even row and column will not show any difference)
+    if degree == 1:
+        row_str_parameter=str_marker_high*row_str_multi_high
+        col_str_parameter = str_marker_high*col_str_multi_high
+    elif degree == 2:
+        row_str_parameter=str_marker_high*row_str_multi_low
+        col_str_parameter = str_marker_high*col_str_multi_low
+    elif degree == 3:
+        row_str_parameter=str_marker_low*row_str_multi_high
+        col_str_parameter = str_marker_low*col_str_multi_high
+    elif degree == 4:
+        row_str_parameter=str_marker_low*row_str_multi_low
+        col_str_parameter = str_marker_low*col_str_multi_low
+    else:
+        print 'no valid parameter'
+
+    print row_str_parameter
+    print col_str_parameter
+
+    p=0
+    compress_criteria_row=np.array([])
+    while p<matr_shape[0]:
+        if row_sum_str[p]<row_str_parameter:
+             compress_criteria_row=np.append(compress_criteria_row,0)
+        else:
+            compress_criteria_row=np.append(compress_criteria_row,1)
+        p=p+1
+
+    q=0
+    compress_criteria_col= np.array([])
+    while q<matr_shape[1]:
+        if col_sum_str[q]<col_str_parameter:
+             compress_criteria_col=np.append(compress_criteria_col,0)
+        else:
+            compress_criteria_col=np.append(compress_criteria_col,1)
+        q=q+1
+
+    matr=np.compress(compress_criteria_row,matr,axis=0)
+    matr= np.compress(compress_criteria_col, matr, axis=1)
+    print matr
+
+#Run Matrix Binarisation
+bin_matr=MatBinFunc(matrix_grid)
+print bin_matr
+OptMatFunc(bin_matr,4)
+#print x
 
 
 
