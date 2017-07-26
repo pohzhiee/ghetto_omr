@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 #Part 1: Image Loading
 #-------------------------------------------------------------------
 #load image
-img = cv2.imread('img_data/omstest4.jpg',cv2.IMREAD_GRAYSCALE)
-img2= cv2.imread('img_data/omstest4.jpg')
+img = cv2.imread('img_data/omstest1.jpg',cv2.IMREAD_GRAYSCALE)
+img2= cv2.imread('img_data/omstest1.jpg')
 img3=cv2.cvtColor(img,cv2.COLOR_GRAY2RGB)
 #bilateral filter, sharpen, thresh
 biblur=cv2.bilateralFilter(img,20,175,175)
@@ -20,7 +20,6 @@ inv=cv2.bitwise_not(thresh1)
 #closed image
 kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
 closed = cv2.morphologyEx(inv, cv2.MORPH_CLOSE, kernel)
-
 
 #Part 2: Finding Valid Contours
 #-------------------------------------------------------------------
@@ -111,7 +110,7 @@ SD_valid=(sum_dif/counter_a)**0.5
 for i in sum_array:
 
     if i>ave_sim_val:
-        cv2.drawContours(img3, contours, counter_m, (255, 0, 0), 3)
+        cv2.drawContours(img3, contours, counter_m, (0, 255, 0), 3)
 
         #Determine valid mean area
         condition = cv2.contourArea(contours[counter_m])>mean_valid_A-2*SD_valid and cv2.contourArea(contours[counter_m])<mean_valid_A+2*SD_valid
@@ -260,12 +259,11 @@ for k in centpt_array:
                 q=q+1
         p=p+1
 
-print matrix_grid
 
 
 #checkpoint
 #print centpt_array
-print '-----------'
+# print '-----------'
 #print valid_counter
 #print len(centpt_array)
 #print mean_hor_dist
@@ -273,8 +271,7 @@ print '-----------'
 
 
 
-cv2.imshow("IMGas", img)
-cv2.waitKey(0)
+
 #initialise plot
 plt.subplot(111),plt.imshow(img3)
 plt.title('dilate1 Image'), plt.xticks([]), plt.yticks([])
@@ -285,5 +282,6 @@ for k in centpt_array:
 plt.show()
 
 cv2.waitKey(0)
+
 
 
