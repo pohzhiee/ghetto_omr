@@ -1,3 +1,5 @@
+import cv2
+import numpy as np
 
 def outlining(img):
     #bilateral filter, sharpen, thresh image
