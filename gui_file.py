@@ -7,7 +7,9 @@ class FileChooserWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="FileChooser Example")
         self.fold_str = None
-        self.grid = Gtk.Grid()
+        self.grid = Gtk.Grid(column_homogeneous=False,
+                         column_spacing=10,
+                         row_spacing=0)
         self.add(self.grid)
 
         button1 = Gtk.Button("Choose File")
@@ -15,7 +17,7 @@ class FileChooserWindow(Gtk.Window):
         self.grid.add(button1)
 
         self.text_file = Gtk.Entry()
-        self.grid.attach(self.text_file,1,0,2,1)
+        self.grid.attach(self.text_file,1,0,4,1)
 
         button2 = Gtk.Button("Choose Folder")
         button2.connect("clicked", self.on_folder_clicked)
@@ -23,7 +25,7 @@ class FileChooserWindow(Gtk.Window):
 
 
         self.text_folder = Gtk.Entry()
-        self.grid.attach(self.text_folder,1,1,2,1)
+        self.grid.attach(self.text_folder,1,1,4,1)
 
     def on_file_clicked(self, widget):
         dialog = Gtk.FileChooserDialog("Please choose a file", self,
@@ -37,6 +39,7 @@ class FileChooserWindow(Gtk.Window):
         if response == Gtk.ResponseType.OK:
             print("Open clicked")
             print("File selected: " + dialog.get_filename())
+            self.text_file.set_text(dialog.get_filename())
         elif response == Gtk.ResponseType.CANCEL:
             print("Cancel clicked")
 
@@ -71,7 +74,7 @@ class FileChooserWindow(Gtk.Window):
             str1 = "Folder selected: " + dialog.get_filename()
             print(str1)
             self.fold_str = str1
-            self.text_folder.set_text(str1)
+            self.text_folder.set_text(dialog.get_filename())
         elif response == Gtk.ResponseType.CANCEL:
             print("Cancel clicked")
 
