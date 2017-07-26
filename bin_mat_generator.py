@@ -16,3 +16,5 @@ def bin_mat(n_row,n_col,dec_num):
                 col_count=col_count+1
             row_count=row_count+1
     return matr
+
+print bin_mat(4,4,500)

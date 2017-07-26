@@ -201,6 +201,10 @@ def formgrid(centpt_array,mean_hor_dist,mean_ver_dist):
 
         elif cX_array[g]-cX_array[g-1]>mean_hor_dist:
             if g == len(cX_array) - 1:
+                temp_var=temp_var+cX_array[g-1]
+                temp_var_counter=temp_var_counter+1
+                temp_var_ave = temp_var / temp_var_counter
+                grp_cX_array = np.append(grp_cX_array, [temp_var_ave], 0)
                 temp_var = cX_array[g]
                 temp_var_counter = 1
                 temp_var_ave = temp_var / temp_var_counter
@@ -238,6 +242,10 @@ def formgrid(centpt_array,mean_hor_dist,mean_ver_dist):
 
         elif cY_array[h]-cY_array[h-1]>mean_ver_dist:
             if h == len(cY_array) - 1:
+                temp_var=temp_var+cY_array[h-1]
+                temp_var_counter=temp_var_counter+1
+                temp_var_ave = temp_var / temp_var_counter
+                grp_cY_array = np.append(grp_cY_array, [temp_var_ave], 0)
                 temp_var = cY_array[h]
                 temp_var_counter = 1
                 temp_var_ave = temp_var / temp_var_counter

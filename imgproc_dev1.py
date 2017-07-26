@@ -8,8 +8,8 @@ import imgproc_funcfile as imgfunc
 #-------------------------------------------------------------------
 
 #load image
-img = cv2.imread('img_data/omstest1.jpg',cv2.IMREAD_GRAYSCALE)
-img2= cv2.imread('img_data/omstest1.jpg')
+img = cv2.imread('img_data/omstest3.jpg',cv2.IMREAD_GRAYSCALE)
+img2= cv2.imread('img_data/omstest3.jpg')
 img3=cv2.cvtColor(img.copy(),cv2.COLOR_GRAY2RGB)
 
 
@@ -101,96 +101,82 @@ def MatBinFunc(matr):
 # 1)Sum rows and columns
 # 2)Forming matrix to determine the strength of each cells = (Row.value + Column.value)/2
 # 3)Find sum of strength of each column and row
-# 4)Defining parameters (
-def OptMatFunc(matr,degree):
-    row_sum=np.sum(matr,axis=1)
-    col_sum = np.sum(matr, axis=0)
+# 4)Pick top n number str and column
+def OptMatFunc(matrix_grid,n_row,n_col):
+    bin_matr = MatBinFunc(matrix_grid)
+    row_sum=np.sum(bin_matr,axis=1)
+    col_sum = np.sum(bin_matr, axis=0)
 
-    matr_shape=matr.shape
+    matr_shape=bin_matr.shape
     str_matr=np.zeros((matr_shape[0],matr_shape[1]),dtype=np.uint16)
 
     m=0
     while m<matr_shape[0]:
         n=0
         while n<matr_shape[1]:
-            str_matr[m, n]=(row_sum[m]+col_sum[n]-2)*matr[m,n]
+            str_matr[m, n]=(row_sum[m]+col_sum[n]-2)*bin_matr[m,n]
             n=n+1
         m=m+1
 
     row_sum_str = np.sum(str_matr, axis=1)
     col_sum_str = np.sum(str_matr, axis=0)
-    print str_matr
-    print row_sum_str
-    print col_sum_str
 
-    #calculate half of the strength marker (high and low)
-    str_marker_high = matr_shape[0]+matr_shape[1]- math.floor(float(matr_shape[0])/2)-math.floor(float(matr_shape[1])/2)-2
-    str_marker_low = matr_shape[0] + matr_shape[1] - math.ceil(float(matr_shape[0]) / 2) - math.ceil(float(matr_shape[1]) / 2) - 2
 
-    # calculate half of the strength multiplier (high and low)
-    row_str_multi_high=math.ceil(float(matr_shape[0])/2)
-    row_str_multi_low = math.floor(float(matr_shape[0])/2)
-    col_str_multi_high=math.ceil(float(matr_shape[1])/2)
-    col_str_multi_low = math.floor(float(matr_shape[1]) / 2)
+    row_sum_str_sort=np.sort(row_sum_str,0,'mergesort')
+    col_sum_str_sort = np.sort(col_sum_str,0, 'mergesort')
 
-    #for parameter (only odd row or column will make a great difference due to floor and ceiling,
-    #even row and column will not show any difference)
-    if degree == 1:
-        row_str_parameter=str_marker_high*row_str_multi_high
-        col_str_parameter = str_marker_high*col_str_multi_high
-    elif degree == 2:
-        row_str_parameter=str_marker_high*row_str_multi_low
-        col_str_parameter = str_marker_high*col_str_multi_low
-    elif degree == 3:
-        row_str_parameter=str_marker_low*row_str_multi_high
-        col_str_parameter = str_marker_low*col_str_multi_high
-    elif degree == 4:
-        row_str_parameter=str_marker_low*row_str_multi_low
-        col_str_parameter = str_marker_low*col_str_multi_low
-    else:
-        print 'no valid parameter'
+    min_row=row_sum_str_sort[len(row_sum_str_sort)-n_row]
+    min_col=col_sum_str_sort[len(col_sum_str_sort)-n_col]
 
-    print row_str_parameter
-    print col_str_parameter
-
-    p=0
-    compress_criteria_row=np.array([])
-    while p<matr_shape[0]:
-        if row_sum_str[p]<row_str_parameter:
-             compress_criteria_row=np.append(compress_criteria_row,0)
+    x=0
+    compress_criteria_row = np.array([])
+    while x<len(row_sum_str):
+        if row_sum_str[x]<min_row:
+            compress_criteria_row = np.append(compress_criteria_row, 0)
         else:
             compress_criteria_row=np.append(compress_criteria_row,1)
-        p=p+1
-
-    q=0
-    compress_criteria_col= np.array([])
-    while q<matr_shape[1]:
-        if col_sum_str[q]<col_str_parameter:
-             compress_criteria_col=np.append(compress_criteria_col,0)
+        x=x+1
+    y = 0
+    compress_criteria_col = np.array([])
+    while y < len(col_sum_str):
+        if col_sum_str[y] < min_col:
+            compress_criteria_col = np.append(compress_criteria_col, 0)
         else:
             compress_criteria_col=np.append(compress_criteria_col,1)
-        q=q+1
+        y=y+1
 
-    matr=np.compress(compress_criteria_row,matr,axis=0)
-    matr= np.compress(compress_criteria_col, matr, axis=1)
-    print matr
-
-#Run Matrix Binarisation
-bin_matr=MatBinFunc(matrix_grid)
-print bin_matr
-OptMatFunc(bin_matr,4)
-#print x
+    if n_row!=np.sum(compress_criteria_row):
+        print "gg row"
+    if n_col != np.sum(compress_criteria_col):
+        print "gg col"
 
 
+    opt_matr_init =np.compress(compress_criteria_row,matrix_grid,axis=0)
+    opt_matr = np.compress(compress_criteria_col, opt_matr_init, axis=1)
 
+    return opt_matr
+
+
+print "----------------------------------------"
+
+new_matrix_grid=OptMatFunc(matrix_grid,9,5)
+new_matrix_grid=new_matrix_grid.reshape(new_matrix_grid.shape[0]*new_matrix_grid.shape[1])
+print new_matrix_grid
+
+newer_matrix_grid=np.zeros((new_matrix_grid.shape[0],3),dtype=np.uint32)
+k=0
+while k<new_matrix_grid.shape[0]:
+    g=new_matrix_grid[k]
+    newer_matrix_grid[k,0]=g[0]
+    newer_matrix_grid[k,1]=g[1]
+    newer_matrix_grid[k,2]=g[2]
+    k=k+1
 
 #checkpoint
 #print centpt_array
 # print '-----------'
-#print valid_counter
 #print len(centpt_array)
-#print mean_hor_dist
-#print mean_ver_dist
+
 
 
 
@@ -198,7 +184,7 @@ OptMatFunc(bin_matr,4)
 #initialise plot
 plt.subplot(111),plt.imshow(img3)
 plt.title('dilate1 Image'), plt.xticks([]), plt.yticks([])
-for k in centpt_array:
+for k in newer_matrix_grid:
     plt.plot(k[0],k[1],'ro')
 
 
