@@ -1,0 +1,17 @@
+Maximised by default, with various grids already in place for content to show up later
+
+Steps for 1 complete cycle of omr
+1) Add/open project
+2) select template file
+3) select regions while inputting data about those regions
+4) select output folder
+5) generate template
+6) select input folder
+7) process
+
+Preliminary:
+Errors always return to select regions interface (with regions already selected)
+user to go back even further if necessary
+
+Expected Final:
+Errors return to appropriate step after determining cause of error

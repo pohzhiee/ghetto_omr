@@ -81,5 +81,6 @@ class FileChooserWindow(Gtk.Window):
         dialog.destroy()
 win = FileChooserWindow()
 win.connect("delete-event", Gtk.main_quit)
+win.maximize()
 win.show_all()
 Gtk.main()
