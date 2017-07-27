@@ -72,10 +72,27 @@ class grid1(Gtk.Grid):
 
         dialog.destroy()
 
+class Tab():
+    def __init__(self):
+        header = Gtk.Box()
+        title_label = Gtk.Label()
+        image = Gtk.Image()
+        image.set_from_stock(Gtk.STOCK_CLOSE,Gtk.IconSize.MENU)
+        close_button = Gtk.Button()
+        close_button.set_image(image)
+        close_button.set_relief(Gtk.ReliefStyle(2))
+        self.connect(close_button,'clicked',self.close_cb)
+
+        header.pack_start(title_label,expand=True,fill=True,padding=0)
+        header.pack_end(close_button,expand=False,fill=False,padding=0)
+        header.show_all()
+        self.header = header
 
 class MyWindow(Gtk.Window):
 
     def __init__(self):
+        self.tab_count=0
+
         Gtk.Window.__init__(self, title="Simple Notebook Example")
         self.set_border_width(8)
         self.maximize()
@@ -118,7 +135,9 @@ class MyWindow(Gtk.Window):
         self.page3.set_border_width(10)
         self.notebook.append_page(self.page3,Gtk.Image.new_from_icon_name("security-medium",Gtk.IconSize.MENU))
     def new_tab(self,widget):
-        print "new_tab"
+        self.tabs = []
+
+
 
 win = MyWindow()
 win.connect("delete-event", Gtk.main_quit)

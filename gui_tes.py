@@ -6,7 +6,7 @@ from gi.repository import Gtk
 class buttontest(Gtk.Button):
     def __init__(self):
         Gtk.Button.__init__(self)
-        self.img = Gtk.Image.new_from_icon_name("folder",30)
+        self.img = Gtk.Image.new_from_icon_name("folder",Gtk.IconSize.MENU)
         # self.img.set_from_file("icons/folder.ico")
         # self.img.pixel-size
         self.set_image(self.img)
@@ -32,6 +32,8 @@ class MainWindow(Gtk.Window):
 
         button2 = Gtk.Button("Choose Folder")
         button2.connect("clicked", self.on_folder_clicked)
+
+        button2.set_relief(Gtk.ReliefStyle(0))
         self.grid.attach_next_to(button2,button1,Gtk.PositionType.BOTTOM,1,1)
 
 
