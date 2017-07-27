@@ -65,6 +65,67 @@ def contouring(img):
     #Assumption: there is a lot of 1s
     return contours,sum_array,ave_sim_val
 
+def shape_detector(contours,hor_dist,ver_dist):
+    shape_dimension_matr = np.zeros((len(contours), 2), dtype=np.ndarray)
+    m=0
+    for c in contours:
+        M = cv2.moments(c)
+        while m < len(contours):
+            peri = cv2.arcLength(c, True)
+            approx = cv2.approxPolyDP(c, 0.04 * peri, True)
+            asp_ratio = float(hor_dist) /float(ver_dist)
+
+            # if the shape has 4 vertices, it is either a square or a rectangle
+            if len(approx) == 4:
+                shape = 0 #0:rectangle or square
+                # compute the bounding box of the contour
+                (x, y, w, h) = cv2.boundingRect(c)
+                shape_dimension=[w,h]
+
+            # otherwise, we assume the shape is a circle or oval
+            else:
+                #differentiate them using aspect ratio
+                if 0.95<asp_ratio<1.05:
+                     shape = 1 #1:circle
+                     # compute the bounding circle of the contour
+                     (x, y), r = cv2.minEnclosingCircle(c)
+                     shape_dimension = [r]
+                else:
+                    shape=2 #2:oval
+                    # compute the bounding ellipse of the contour
+                    (x, y), (MA, ma), angle= cv2.fitEllipse(c)
+                    shape_dimension = [MA,ma]
+
+            shape_dimension_matr[m,0]=shape
+            shape_dimension_matr[m, 1] =shape_dimension
+            m=m+1
+
+        else:
+            shape = 0
+            shape_dimension = 0
+            asp_ratio=0
+
+    print shape_dimension_matr
+
+
+    shape_dimension_matr_mod=np.compress([1,0],shape_dimension_matr,axis=1)
+    shape_index_sum=shape_dimension_matr_mod.sum(axis=1)
+    shape_index_sum_diff=np.ediff1d(shape_index_sum)
+
+    if np.any(shape_index_sum_diff)!=0:
+        print 'Error'
+
+
+    else:
+        print 'Data obtained'
+        return shape_dimension_matr
+        # shape_dimension_matr_mod = np.compress([0, 1], shape_dimension_matr, axis=1)
+        # k = 0
+        # while k < shape_dimension_matr_mod.shape[0]:
+        #     shape_dimension_arr = shape_dimension_matr_mod[k, 0]
+        #
+        #     k = k + 1
+
 def get_centre(contours,sum_array,ave_sim_val):
     #counters
     #creation of new array to store centre point
@@ -134,9 +195,32 @@ def get_centre(contours,sum_array,ave_sim_val):
     mean_hor_dist=hor_dist_acc/valid_counter
     mean_ver_dist=ver_dist_acc/valid_counter
 
-
     #delete 1st row
     centpt_array=np.delete(centpt_array,0,0)
+
+    #select contours number (into an array) to run shape detector
+    sel_cont_num=np.array([0])
+    len(centpt_array)
+    j=0
+    while j<len(centpt_array):
+        position=centpt_array[j]
+        sel_cont_num=np.append(sel_cont_num,[position[2]],0)
+        j=j+1
+    sel_cont_num = np.delete(sel_cont_num, 0, 0)
+
+    #using the contours number position create a binary (which is the compress criteria)
+    compress_criteria=np.zeros(len(contours),dtype=np.uint8)
+    for c in sel_cont_num:
+        compress_criteria[c]=1
+
+    #compress/truncate unwanted contours as contours_modified
+    contours_mod=np.compress(compress_criteria,contours,0)
+    # run shape_detector to determine the dimension of shape
+    shape_dim_matr = shape_detector(contours_mod, mean_hor_dist, mean_ver_dist)
+
+    print
+
+
 
     # #checkpoint for adding array
     centpt_array=np.append(centpt_array,[[100,100,1000]],0)
