@@ -1,15 +1,14 @@
 import numpy as np
 import cv2
 import matplotlib.pyplot as plt
-import math
 import imgproc_funcfile as imgfunc
 
 #Part 1: Image Loading
 #-------------------------------------------------------------------
 
 #load image
-img = cv2.imread('img_data/omstest3.jpg',cv2.IMREAD_GRAYSCALE)
-img2= cv2.imread('img_data/omstest3.jpg')
+img = cv2.imread('img_data/omstest2.jpg',cv2.IMREAD_GRAYSCALE)
+img2= cv2.imread('img_data/omstest2.jpg')
 img3=cv2.cvtColor(img.copy(),cv2.COLOR_GRAY2RGB)
 
 
@@ -159,9 +158,8 @@ def OptMatFunc(matrix_grid,n_row,n_col):
 
 print "----------------------------------------"
 
-new_matrix_grid=OptMatFunc(matrix_grid,9,5)
+new_matrix_grid=OptMatFunc(matrix_grid,10,8)
 new_matrix_grid=new_matrix_grid.reshape(new_matrix_grid.shape[0]*new_matrix_grid.shape[1])
-print new_matrix_grid
 
 newer_matrix_grid=np.zeros((new_matrix_grid.shape[0],3),dtype=np.uint32)
 k=0
