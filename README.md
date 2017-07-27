@@ -1,19 +1,28 @@
-# omr_3weeks
-Development goes like this:
-IMPORTANT NOTE
---------------
-all images passed to functions in img_func has to be grayscale
---------------
+Language: Python 2.7 (C++/python3 port if possible)
+Dependencies: Gtk 3.0, OpenCV 3.2 and their respective dependencies
 
-1) write everything important in function files
-1b) functions that dont really belong like shape detector(which is a sub function) use a new file
+Current contributors are only hobbyists, so anybody is welcome to contribute :)
 
-2) test implementation by running the function in the test.py
-2b) or create any other test file that you like also can
+Aim:
+To develop a working optical mark reading software capable of:
+1) reading the answer of multiple choice questions (i.e. A B C D E)
+2) reading the answer of shaded numerical answers (i.e. 345)
+3) Provide necessary GUI such that it is user friendly
 
-what if i need to use the same function in two instances
-like sing shape detector for MCQ and also for numerical
+*OMS refers to Optical Mark Sheet
+Methodology:
+1) Select a blank OMS sheet
+2) Select multiple regions of interest in a blank OMS as template
+3) Specify each region (i.e. number of questions & answers, position marker, etc.)
+4) Outlining regions with questions
+5) Detect contours
+6) find valid contours and make it into a matrix
+7) Get absolute coordinates of each element in matrix (to match that of answer later)
+8) Select output folder
+9) Select input folder
+10) Process all image files in input folder by perspective transforming each one based on surface markers
+11) Save output to output folder
 
-different file, thats why i got this shape file
 
-test file is for implementing the functions, so call functions there
+
+
