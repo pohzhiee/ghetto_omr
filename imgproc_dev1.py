@@ -3,12 +3,17 @@ import cv2
 import matplotlib.pyplot as plt
 import imgproc_funcfile as imgfunc
 
+#OMS Info Input
+n_col= 4
+n_row= 10
+path='img_data/omsoval2b.jpg'
+
 #Part 1: Image Loading
 #-------------------------------------------------------------------
 
 #load image
-img = cv2.imread('img_data/omstest2.jpg',cv2.IMREAD_GRAYSCALE)
-img2= cv2.imread('img_data/omstest2.jpg')
+img = cv2.imread(path,cv2.IMREAD_GRAYSCALE)
+img2= cv2.imread(path)
 img3=cv2.cvtColor(img.copy(),cv2.COLOR_GRAY2RGB)
 
 
@@ -145,9 +150,9 @@ def OptMatFunc(matrix_grid,n_row,n_col):
         y=y+1
 
     if n_row!=np.sum(compress_criteria_row):
-        print "gg row"
+        print "Error:No. of Rows Incorrect"
     if n_col != np.sum(compress_criteria_col):
-        print "gg col"
+        print "Error:No. of Columns Incorrect"
 
 
     opt_matr_init =np.compress(compress_criteria_row,matrix_grid,axis=0)
@@ -158,7 +163,7 @@ def OptMatFunc(matrix_grid,n_row,n_col):
 
 print "----------------------------------------"
 
-new_matrix_grid=OptMatFunc(matrix_grid,10,8)
+new_matrix_grid=OptMatFunc(matrix_grid,n_row,n_col)
 new_matrix_grid=new_matrix_grid.reshape(new_matrix_grid.shape[0]*new_matrix_grid.shape[1])
 
 newer_matrix_grid=np.zeros((new_matrix_grid.shape[0],3),dtype=np.uint32)

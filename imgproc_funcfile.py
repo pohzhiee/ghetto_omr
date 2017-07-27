@@ -77,24 +77,24 @@ def shape_detector(contours,hor_dist,ver_dist):
 
             # if the shape has 4 vertices, it is either a square or a rectangle
             if len(approx) == 4:
-                shape = 0 #0:rectangle or square
+                shape = 1 #1:rectangle or square
                 # compute the bounding box of the contour
                 (x, y, w, h) = cv2.boundingRect(c)
-                shape_dimension=[w,h]
+                shape_dimension=w,h
 
             # otherwise, we assume the shape is a circle or oval
             else:
                 #differentiate them using aspect ratio
                 if 0.95<asp_ratio<1.05:
-                     shape = 1 #1:circle
+                     shape = 2 #2:circle
                      # compute the bounding circle of the contour
                      (x, y), r = cv2.minEnclosingCircle(c)
-                     shape_dimension = [r]
+                     shape_dimension = r
                 else:
-                    shape=2 #2:oval
+                    shape=3 #3:oval
                     # compute the bounding ellipse of the contour
                     (x, y), (MA, ma), angle= cv2.fitEllipse(c)
-                    shape_dimension = [MA,ma]
+                    shape_dimension = MA,ma
 
             shape_dimension_matr[m,0]=shape
             shape_dimension_matr[m, 1] =shape_dimension
@@ -105,26 +105,52 @@ def shape_detector(contours,hor_dist,ver_dist):
             shape_dimension = 0
             asp_ratio=0
 
-    print shape_dimension_matr
-
 
     shape_dimension_matr_mod=np.compress([1,0],shape_dimension_matr,axis=1)
     shape_index_sum=shape_dimension_matr_mod.sum(axis=1)
     shape_index_sum_diff=np.ediff1d(shape_index_sum)
 
     if np.any(shape_index_sum_diff)!=0:
-        print 'Error'
+         print 'Error'
 
 
-    else:
-        print 'Data obtained'
-        return shape_dimension_matr
-        # shape_dimension_matr_mod = np.compress([0, 1], shape_dimension_matr, axis=1)
+    elif np.all(shape_index_sum_diff)==0:
+        shape_dimension_matr_mod2 = np.compress([0, 1], shape_dimension_matr, axis=1)
+
+        sum_para_1 = 0
+        sum_para_2 = 0
+
+        if shape_index_sum[0]==2:
+            shape_dimension_para= shape_dimension_matr_mod2.sum(axis=0)/shape_dimension_matr_mod2.shape[0]
+
+        elif shape_index_sum[0]==1 or 3:
+            h=0
+            while h<shape_dimension_matr_mod2.shape[0]:
+                h_var=shape_dimension_matr_mod2[h]
+                h_var2=[list(x)for x in h_var]
+                h_var3=h_var2[0]
+                sum_para_1=sum_para_1+h_var3[0]
+                h=h+1
+            para_1=sum_para_1/shape_dimension_matr_mod2.shape[0]
+
+            g = 0
+            while g < shape_dimension_matr_mod2.shape[0]:
+                g_var = shape_dimension_matr_mod2[g]
+                g_var2 = [list(x) for x in g_var]
+                g_var3=g_var2[0]
+                sum_para_2 = sum_para_2 + g_var3[1]
+                g = g + 1
+            para_2 = sum_para_2 / shape_dimension_matr_mod2.shape[0]
+
+            shape_dimension_para=[para_1,para_2]
+
+        return shape_index_sum[0],shape_dimension_para
         # k = 0
         # while k < shape_dimension_matr_mod.shape[0]:
         #     shape_dimension_arr = shape_dimension_matr_mod[k, 0]
         #
         #     k = k + 1
+
 
 def get_centre(contours,sum_array,ave_sim_val):
     #counters
@@ -216,13 +242,11 @@ def get_centre(contours,sum_array,ave_sim_val):
     #compress/truncate unwanted contours as contours_modified
     contours_mod=np.compress(compress_criteria,contours,0)
     # run shape_detector to determine the dimension of shape
-    shape_dim_matr = shape_detector(contours_mod, mean_hor_dist, mean_ver_dist)
-
-    print
-
+    a,b = shape_detector(contours_mod, mean_hor_dist, mean_ver_dist)
+    print a,b
 
 
-    # #checkpoint for adding array
+    ##checkpoint for adding array (Remove it in actual program)
     centpt_array=np.append(centpt_array,[[100,100,1000]],0)
     centpt_array=np.append(centpt_array,[[40,290,1001]],0)
     centpt_array=np.append(centpt_array,[[450,800,1002]],0)
