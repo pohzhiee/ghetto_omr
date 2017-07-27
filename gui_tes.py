@@ -1,106 +1,98 @@
-#!/usr/bin/python
-'''
-This program just shows off a simple example of using GTK with SimpleCV
-This example interfaces with a Camera in real time
-It's a very simple way to update an image using python and GTK.
-The image is being updated as the slider is moved.
-The only amount of SimpleCV code is found in the process_image() function
-'''
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
 
-import gtk
-import cv2
-import gobject
-import numpy as np
-
-cap = cv2.VideoCapture(0)
-
-class app(gtk.Window):
-
-    #Program Settings (You can change these)
-    edge_threshold = 100
-    max_threshold = 500
-    min_threshold = 0
-    window_width = 500
-    window_height = 500
-    refresh_rate = 100 #in milliseconds
-    #End Program Settings
-
-    #Variables
-    current_image = None
-
-    #This function setup's the program
+class buttontest(Gtk.Button):
     def __init__(self):
-        super(app, self).__init__()
-        self.set_position(gtk.WIN_POS_CENTER)
-        self.set_title("Edge Threshold Adjuster")
-        self.set_decorated(True)
-        self.set_has_frame(False)
-        self.set_resizable(False)
-        self.
-        self.set_default_size(self.window_width,self.window_height)
-        self.connect("destroy", gtk.main_quit)
-        vbox = gtk.VBox(spacing=4)
+        Gtk.Button.__init__(self)
+        self.img = Gtk.Image.new_from_icon_name("folder",30)
+        # self.img.set_from_file("icons/folder.ico")
+        # self.img.pixel-size
+        self.set_image(self.img)
+        self.connect("clicked",self.on_file_clicked)
+    def on_file_clicked(self,widget1):
+        print "clicked"
+class MainWindow(Gtk.Window):
+    def __init__(self):
+        Gtk.Window.__init__(self, title="FileChooser Example")
+        self.maximize()
+        self.fold_str = None
+        self.grid = Gtk.Grid(column_homogeneous=False,
+                             column_spacing=10,
+                             row_spacing=0)
+
+        self.add(self.grid)
+        button1 = Gtk.Button("Choose File")
+        button1.connect("clicked", self.on_file_clicked)
+        self.grid.add(button1)
+
+        self.text_file = Gtk.Entry()
+        self.grid.attach(self.text_file,1,0,4,1)
+
+        button2 = Gtk.Button("Choose Folder")
+        button2.connect("clicked", self.on_folder_clicked)
+        self.grid.attach_next_to(button2,button1,Gtk.PositionType.BOTTOM,1,1)
 
 
-        #Setup the slider bar
-        scale = gtk.HScale()
-        scale.set_range(self.min_threshold, self.max_threshold)
-        scale.set_size_request(500, 25)
-        scale.set_value((self.max_threshold + self.min_threshold) / 2)
-        scale.connect("value-changed", self.update_threshold)
-        vbox.add(scale)
+        self.text_folder = Gtk.Entry()
+        self.grid.attach(self.text_folder,1,1,4,1)
+        but3=buttontest()
+        self.grid.attach(but3,0,2,1,1)
+    def on_file_clicked(self, widget):
+        dialog = Gtk.FileChooserDialog("Please choose a file", self,
+            Gtk.FileChooserAction.OPEN,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
 
-        #Setup the information label
-        info = gtk.Label()
-        info.set_label("Move the slider to adjust the edge detection threshold")
-        vbox.add(info)
+        self.add_filters(dialog)
 
-        #Add the image to the display
-        new_image = self.process_image()
-        converted_image = gtk.gdk.pixbuf_new_from_array(new_image, gtk.gdk.COLORSPACE_RGB, 8)
-        image = gtk.Image()
-        image.set_from_pixbuf(converted_image)
-        image.show()
-        vbox.add(image)
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("Open clicked")
+            print("File selected: " + dialog.get_filename())
+            self.text_file.set_text(dialog.get_filename())
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancel clicked")
 
+        dialog.destroy()
 
-        gobject.timeout_add(self.refresh_rate, self.refresh)
-        self.current_image = image
-        self.add(vbox)
-        self.show_all()
+    def add_filters(self, dialog):
+        filter_text = Gtk.FileFilter()
+        filter_text.set_name("Text files")
+        filter_text.add_mime_type("text/plain")
+        dialog.add_filter(filter_text)
 
+        filter_py = Gtk.FileFilter()
+        filter_py.set_name("Python files")
+        filter_py.add_mime_type("text/x-python")
+        dialog.add_filter(filter_py)
 
-    def refresh(self):
-        self.update_image()
-        return True
+        filter_any = Gtk.FileFilter()
+        filter_any.set_name("Any files")
+        filter_any.add_pattern("*")
+        dialog.add_filter(filter_any)
 
-    '''
-    This is where you can do any of your SimpleCV processing
-    it returns a Numpy array as that is what is handled by GTK
-    '''
-    def process_image(self):
-        #Start SimpleCV Code
-        ret, img = cap.read()
-        # edges = img.edges(self.edge_threshold)
-        # numpy_img = edges.getNumpy()
-        # End SimpleCV Code
-        RGB_img = cv2.cvtColor(img,cv2.COLOR_BGR2RGB)
-        return RGB_img
+    def on_folder_clicked(self, widget):
+        dialog = Gtk.FileChooserDialog("Please choose a folder", self,
+            Gtk.FileChooserAction.SELECT_FOLDER,
+            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
+             "Select", Gtk.ResponseType.OK))
+        dialog.set_default_size(800, 400)
 
-    def update_image(self):
-        updated_image = self.process_image()
-        converted_image = gtk.gdk.pixbuf_new_from_array(updated_image, gtk.gdk.COLORSPACE_RGB, 8)
-        self.current_image.set_from_pixbuf(converted_image)
-        self.show_all()
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            print("Select clicked")
+            str1 = "Folder selected: " + dialog.get_filename()
+            print(str1)
+            self.fold_str = str1
+            self.text_folder.set_text(dialog.get_filename())
+        elif response == Gtk.ResponseType.CANCEL:
+            print("Cancel clicked")
 
-
-    #This function is called anything the slider is moved
-    def update_threshold(self, w):
-        #grab the value from the slider
-        self.edge_threshold = w.get_value()
-        self.update_image()
-
-
-program1 = app()
-gtk.main()
+        dialog.destroy()
+win = MainWindow()
+win.connect("delete-event", Gtk.main_quit)
+win.maximize()
+win.show_all()
+Gtk.main()
