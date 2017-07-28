@@ -145,11 +145,6 @@ def shape_detector(contours,hor_dist,ver_dist):
             shape_dimension_para=[para_1,para_2]
 
         return shape_index_sum[0],shape_dimension_para
-        # k = 0
-        # while k < shape_dimension_matr_mod.shape[0]:
-        #     shape_dimension_arr = shape_dimension_matr_mod[k, 0]
-        #
-        #     k = k + 1
 
 
 def get_centre(contours,sum_array,ave_sim_val):
@@ -242,9 +237,7 @@ def get_centre(contours,sum_array,ave_sim_val):
     #compress/truncate unwanted contours as contours_modified
     contours_mod=np.compress(compress_criteria,contours,0)
     # run shape_detector to determine the dimension of shape
-    a,b = shape_detector(contours_mod, mean_hor_dist, mean_ver_dist)
-    print a,b
-
+    shape_type,shape_dimension = shape_detector(contours_mod, mean_hor_dist, mean_ver_dist)
 
     ##checkpoint for adding array (Remove it in actual program)
     centpt_array=np.append(centpt_array,[[100,100,1000]],0)
@@ -271,9 +264,12 @@ def get_centre(contours,sum_array,ave_sim_val):
             h = h + 1
         g=g+1
 
-    return centpt_array,mean_hor_dist,mean_ver_dist
+    return centpt_array,mean_hor_dist,mean_ver_dist,shape_type, shape_dimension
+
+#form grid function
 
 def formgrid(centpt_array,mean_hor_dist,mean_ver_dist):
+#Scanning center point x and y and sort
     cX_array=np.array([])
     cY_array=np.array([])
 
@@ -388,3 +384,181 @@ def formgrid(centpt_array,mean_hor_dist,mean_ver_dist):
                     q=q+1
             p=p+1
     return matrix_grid
+
+#function to find all the x and y coordinate of the matrix grid
+def MatrArrFunc(matr):
+    matr_shape = matr.shape
+    val_X_matrix = np.zeros((matr_shape[0], matr_shape[1]), dtype=np.ndarray)
+    val_Y_matrix = np.zeros((matr_shape[0], matr_shape[1]), dtype=np.ndarray)
+    val_X_matrix_counter = np.zeros((matr_shape[0], matr_shape[1]), dtype=np.ndarray)
+    val_Y_matrix_counter=np.zeros((matr_shape[0], matr_shape[1]), dtype=np.ndarray)
+
+
+    counter_g1 = 0
+    while counter_g1 < matr_shape[1]:
+        counter_g2 = 0
+        while counter_g2 < matr_shape[0]:
+            matr_value = matr[counter_g2, counter_g1]
+            matr_value=np.asarray(matr_value)
+
+            if matr_value.size==3:
+                val_X_matrix[counter_g2, counter_g1] = matr_value[0]
+                val_Y_matrix[counter_g2, counter_g1] = matr_value[1]
+                val_X_matrix_counter[counter_g2, counter_g1] = 1
+                val_Y_matrix_counter[counter_g2, counter_g1] = 1
+            elif matr_value.size == 0:
+                val_X_matrix[counter_g2, counter_g1] = 0
+                val_Y_matrix[counter_g2, counter_g1] = 0
+                val_X_matrix_counter[counter_g2, counter_g1] = 0
+                val_Y_matrix_counter[counter_g2, counter_g1] = 0
+            counter_g2 = counter_g2 + 1
+        counter_g1 = counter_g1 + 1
+
+    val_X_array_counter = val_X_matrix_counter.sum(axis=0)
+    val_Y_array_counter = val_Y_matrix_counter.sum(axis=1)
+    val_X_array_acc = val_X_matrix.sum(axis=0)
+    val_Y_array_acc=val_Y_matrix.sum(axis=1)
+    val_X_array = val_X_array_acc/val_X_array_counter
+    val_Y_array = val_Y_array_acc / val_Y_array_counter
+
+    return val_X_array, val_Y_array
+
+#function to check spacing of matrix (difference between x and y)
+def SpaceFunc(val_x_array,val_y_array):
+    spa_X_array = np.ediff1d(val_x_array)
+    spa_Y_array = np.ediff1d(val_y_array)
+
+    return spa_X_array,spa_Y_array
+
+#Fucntion to convert matrix to binary (those with value to 1, those with 0 to 0)
+def MatBinFunc(matr):
+    matr_shape = matr.shape
+    matr_bin=np.ones((matr_shape[0],matr_shape[1]),dtype=np.uint8)
+
+    counter_g1 = 0
+    while counter_g1 < matr_shape[1]:
+        counter_g2 = 0
+        while counter_g2 < matr_shape[0]:
+            matr_value = matr[counter_g2, counter_g1]
+            matr_value=np.asarray(matr_value)
+            if matr_value.size == 1:
+                if matr_value==0:
+                    matr_bin[counter_g2, counter_g1]=0
+
+            counter_g2 = counter_g2 + 1
+        counter_g1 = counter_g1 + 1
+    return matr_bin
+
+
+#Creating a function to optimise a binary matrix to grid form of 1 x 1
+#Methodology:
+# 1)Sum rows and columns
+# 2)Forming matrix to determine the strength of each cells = (Row.value + Column.value)/2
+# 3)Find sum of strength of each column and row
+# 4)Pick top n number str and column
+def OptMatFunc(matrix_grid,n_row,n_col):
+    bin_matr = MatBinFunc(matrix_grid)
+    row_sum=np.sum(bin_matr,axis=1)
+    col_sum = np.sum(bin_matr, axis=0)
+
+    matr_shape=bin_matr.shape
+    str_matr=np.zeros((matr_shape[0],matr_shape[1]),dtype=np.uint16)
+
+    m=0
+    while m<matr_shape[0]:
+        n=0
+        while n<matr_shape[1]:
+            str_matr[m, n]=(row_sum[m]+col_sum[n]-2)*bin_matr[m,n]
+            n=n+1
+        m=m+1
+
+    row_sum_str = np.sum(str_matr, axis=1)
+    col_sum_str = np.sum(str_matr, axis=0)
+
+
+    row_sum_str_sort=np.sort(row_sum_str,0,'mergesort')
+    col_sum_str_sort = np.sort(col_sum_str,0, 'mergesort')
+
+    min_row=row_sum_str_sort[len(row_sum_str_sort)-n_row]
+    min_col=col_sum_str_sort[len(col_sum_str_sort)-n_col]
+
+    x=0
+    compress_criteria_row = np.array([])
+    while x<len(row_sum_str):
+        if row_sum_str[x]<min_row:
+            compress_criteria_row = np.append(compress_criteria_row, 0)
+        else:
+            compress_criteria_row=np.append(compress_criteria_row,1)
+        x=x+1
+    y = 0
+    compress_criteria_col = np.array([])
+    while y < len(col_sum_str):
+        if col_sum_str[y] < min_col:
+            compress_criteria_col = np.append(compress_criteria_col, 0)
+        else:
+            compress_criteria_col=np.append(compress_criteria_col,1)
+        y=y+1
+
+    if n_row!=np.sum(compress_criteria_row):
+        print "Error:No. of Rows Incorrect"
+    if n_col != np.sum(compress_criteria_col):
+        print "Error:No. of Columns Incorrect"
+
+
+    opt_matr_init =np.compress(compress_criteria_row,matrix_grid,axis=0)
+    opt_matr = np.compress(compress_criteria_col, opt_matr_init, axis=1)
+
+    #Checking Spacing Regularity, otherwise return error
+    #If Spacing are regular, fill up missing centere points
+    val_x_arr,val_y_arr=MatrArrFunc(opt_matr)
+    spa_x_arr,spa_y_arr=SpaceFunc(val_x_arr,val_y_arr)
+
+    spa_x_diff = np.ediff1d(spa_x_arr)
+    spa_y_diff = np.ediff1d(spa_y_arr)
+    if abs(np.any(spa_x_diff))>2 or abs(np.any(spa_y_diff))>2:
+        print 'Error:Optimisation M'
+    else:
+        opt_bin_matr_init = np.compress(compress_criteria_row, bin_matr, axis=0)
+        opt_bin_matr = np.compress(compress_criteria_col, opt_bin_matr_init, axis=1)
+
+        row_index=0
+        while row_index<opt_bin_matr.shape[0]:
+            col_index=0
+            while col_index<opt_bin_matr.shape[1]:
+                if opt_bin_matr[row_index,col_index]==0:
+                    opt_matr[row_index,col_index]=[val_x_arr[col_index],val_y_arr[row_index],0]
+                col_index=col_index+1
+            row_index=row_index+1
+
+    return opt_matr
+
+def ModMatrGrid(matr):
+    matr = matr.reshape(matr.shape[0] * matr.shape[1])
+    mod_matr = np.zeros((matr.shape[0], 3), dtype=np.uint32)
+    k = 0
+    while k < matr.shape[0]:
+        g = matr[k]
+        mod_matr[k, 0] = g[0]
+        mod_matr[k, 1] = g[1]
+        mod_matr[k, 2] = g[2]
+        k = k + 1
+    return mod_matr
+
+def DrawShape(img,matr,shape_type,shape_dimension,bubble_colour):
+    if shape_type==1: #1=rectangle/square
+        for k in matr:
+            imgoutput=cv2.rectangle(img,(k[0],k[1]),(k[0]+shape_dimension[0],k[1]+shape_dimension[1]),bubble_colour,2)
+    elif shape_type==2: #2=circle
+        for k in matr:
+            imgoutput=cv2.circle(img,(k[0],k[1]),int(shape_dimension[0]),bubble_colour,2)
+    elif shape_type == 3:  # 2=oval
+        for k in matr:
+            imgoutput = cv2.ellipse(img, ((k[0], k[1]), (shape_dimension[0], shape_dimension[1]), 0), bubble_colour, 2)
+
+    return imgoutput
+
+def DrawCentrePoint(img,matr,cntpt_colour):
+    for k in matr:
+        imgoutput = cv2.circle(img, (k[0], k[1]),5,cntpt_colour, -1)
+    return imgoutput
+
