@@ -5,19 +5,19 @@ import imgproc_funcfile as imgfunc
 
 #OMS Info Input
 n_col= 5
-n_row= 5
-path='img_data/omstest1.jpg'
+n_row= 10
+path='img_data/oms1a.jpg'
 
 #Settings
 ##Bubble
 show_bubble=1 #0=No, #1=Yes
 bubble_colour=(255,0,0)
-bubble_linethickness=5 #integer value >0
+bubble_linethickness=1 #integer value >0
 
 ##Centre Point
 show_cntpt=1 #0=No, #1=Yes
 cntpt_colour=(255,0,0)
-cntpt_size=5 #integer value >0
+cntpt_size=1 #integer value >0
 
 ##Matching Stringency
 match_coeff=0.01

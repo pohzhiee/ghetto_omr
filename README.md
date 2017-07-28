@@ -52,6 +52,7 @@ User Instructions to run the programme with minimal error:
     - Be clear
     - Only have minimal rotation
     - Only have minimal offset
+    - Only have minimal scaling
     - NOT be crumpled with crease lines
     - NOT be distorted
 
