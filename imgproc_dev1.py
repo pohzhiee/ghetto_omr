@@ -9,10 +9,16 @@ n_row= 10
 path='img_data/omstest2.jpg'
 
 #Settings
+##Bubble
 show_bubble=1 #0=No, #1=Yes
 bubble_colour=(255,0,0)
+bubble_linethickness=5 #integer value >0
+
+##Centre Point
 show_cntpt=1 #0=No, #1=Yes
 cntpt_colour=(255,0,0)
+cntpt_size=5 #integer value >0
+
 
 #-----------------------------------------------------------------
 #Part 1: Image Loading
@@ -49,9 +55,9 @@ mod_matrix_grid=imgfunc.ModMatrGrid(opt_matrix_grid)
 #---------------------------------------------------------------------------------------------
 # Adding appropriate shapes and centre points into img3
 if show_bubble==1:
-    imgoutput=imgfunc.DrawShape(img3,mod_matrix_grid,shape_type,shape_dimension,bubble_colour)
+    imgoutput=imgfunc.DrawShape(img3,mod_matrix_grid,shape_type,shape_dimension,bubble_colour,bubble_linethickness)
 if show_cntpt==1:
-    imgoutput=imgfunc.DrawCentrePoint(imgoutput,mod_matrix_grid,cntpt_colour)
+    imgoutput=imgfunc.DrawCentrePoint(imgoutput,mod_matrix_grid,cntpt_colour,cntpt_size)
 
 
 #---------------------------------------------------------------------------------------------

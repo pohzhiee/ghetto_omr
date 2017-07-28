@@ -544,21 +544,21 @@ def ModMatrGrid(matr):
         k = k + 1
     return mod_matr
 
-def DrawShape(img,matr,shape_type,shape_dimension,bubble_colour):
+def DrawShape(img,matr,shape_type,shape_dimension,bubble_colour,bubble_linethickness):
     if shape_type==1: #1=rectangle/square
         for k in matr:
-            imgoutput=cv2.rectangle(img,(k[0],k[1]),(k[0]+shape_dimension[0],k[1]+shape_dimension[1]),bubble_colour,2)
+            imgoutput=cv2.rectangle(img,(k[0],k[1]),(k[0]+shape_dimension[0],k[1]+shape_dimension[1]),bubble_colour,bubble_linethickness)
     elif shape_type==2: #2=circle
         for k in matr:
-            imgoutput=cv2.circle(img,(k[0],k[1]),int(shape_dimension[0]),bubble_colour,2)
+            imgoutput=cv2.circle(img,(k[0],k[1]),int(shape_dimension[0]),bubble_colour,bubble_linethickness)
     elif shape_type == 3:  # 2=oval
         for k in matr:
-            imgoutput = cv2.ellipse(img, ((k[0], k[1]), (shape_dimension[0], shape_dimension[1]), 0), bubble_colour, 2)
+            imgoutput = cv2.ellipse(img, ((k[0], k[1]), (shape_dimension[0], shape_dimension[1]), 0), bubble_colour, bubble_linethickness)
 
     return imgoutput
 
-def DrawCentrePoint(img,matr,cntpt_colour):
+def DrawCentrePoint(img,matr,cntpt_colour,cntpt_size):
     for k in matr:
-        imgoutput = cv2.circle(img, (k[0], k[1]),5,cntpt_colour, -1)
+        imgoutput = cv2.circle(img, (k[0], k[1]),cntpt_size,cntpt_colour, -1)
     return imgoutput
 
