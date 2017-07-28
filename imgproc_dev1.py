@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import imgproc_funcfile as imgfunc
 
 #OMS Info Input
-n_col= 8
-n_row= 10
-path='img_data/omstest2.jpg'
+n_col= 5
+n_row= 5
+path='img_data/omstest1.jpg'
 
 #Settings
 ##Bubble
@@ -18,6 +18,9 @@ bubble_linethickness=5 #integer value >0
 show_cntpt=1 #0=No, #1=Yes
 cntpt_colour=(255,0,0)
 cntpt_size=5 #integer value >0
+
+##Matching Stringency
+match_coeff=0.01
 
 
 #-----------------------------------------------------------------
@@ -35,7 +38,7 @@ outline=imgfunc.outlining(img)
 #maximum contour shape matching coefficient, valid mean Area
 #obtain centre point,hor_dist,ver_dist,shape type,shape dimension
 
-contour_trunc,sum_array,ave_sim_val = imgfunc.contouring(outline)
+contour_trunc,sum_array,ave_sim_val = imgfunc.contouring(outline,match_coeff)
 centpt_array,mean_hor_dist,mean_ver_dist,shape_type,shape_dimension=imgfunc.get_centre(contour_trunc,sum_array,ave_sim_val)
 
 #---------------------------------------------------------------------------------------------
@@ -47,6 +50,8 @@ matrix_grid = imgfunc.formgrid(centpt_array,mean_hor_dist,mean_ver_dist)
 
 #form optimised matrix grid
 opt_matrix_grid=imgfunc.OptMatFunc(matrix_grid,n_row,n_col)
+
+print opt_matrix_grid
 
 #---------------------------------------------------------------------------------------------
 #converting optimised matrix grid into modified matrix for output

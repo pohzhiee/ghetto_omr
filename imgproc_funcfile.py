@@ -2,6 +2,9 @@ import cv2
 import numpy as np
 
 def outlining(img):
+    #kernel size
+    kernel_size=3
+    #-------------------------------------------------
     #bilateral filter, sharpen, thresh image
     biblur=cv2.bilateralFilter(img,20,175,175)
     sharp=cv2.addWeighted(img,1.55,biblur,-0.5,0)
@@ -9,15 +12,15 @@ def outlining(img):
 
     #negative and closed image
     inv=cv2.bitwise_not(thresh1)
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3))
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))
     closed = cv2.morphologyEx(inv, cv2.MORPH_CLOSE, kernel)
     return closed
 
-def contouring(img):
+def contouring(img,match_coeff):
     #Defining coefficients
     #----------------------------------
     #Max value of contour shape matching coefficient
-    match_coeff = 0.01
+    match_coeff = 0.1
     #max contour area
     max_cont_area = 100
     #----------------------------------
@@ -94,7 +97,10 @@ def shape_detector(contours,hor_dist,ver_dist):
                     shape=3 #3:oval
                     # compute the bounding ellipse of the contour
                     (x, y), (MA, ma), angle= cv2.fitEllipse(c)
-                    shape_dimension = MA,ma
+                    if hor_dist<ver_dist:
+                        shape_dimension = MA,ma
+                    elif ver_dist<hor_dist:
+                        shape_dimension=ma,MA
 
             shape_dimension_matr[m,0]=shape
             shape_dimension_matr[m, 1] =shape_dimension
@@ -240,11 +246,11 @@ def get_centre(contours,sum_array,ave_sim_val):
     shape_type,shape_dimension = shape_detector(contours_mod, mean_hor_dist, mean_ver_dist)
 
     ##checkpoint for adding array (Remove it in actual program)
-    centpt_array=np.append(centpt_array,[[100,100,1000]],0)
-    centpt_array=np.append(centpt_array,[[40,290,1001]],0)
-    centpt_array=np.append(centpt_array,[[450,800,1002]],0)
-    centpt_array=np.append(centpt_array,[[100,300,1003]],0)
-    centpt_array=np.append(centpt_array,[[0,0,1004]],0)
+    #centpt_array=np.append(centpt_array,[[100,100,1000]],0)
+    #centpt_array=np.append(centpt_array,[[40,290,1001]],0)
+    #centpt_array=np.append(centpt_array,[[450,800,1002]],0)
+    #centpt_array=np.append(centpt_array,[[100,300,1003]],0)
+    #centpt_array=np.append(centpt_array,[[0,0,1004]],0)
 
     #Removing Duplicates
     g=0
@@ -547,7 +553,7 @@ def ModMatrGrid(matr):
 def DrawShape(img,matr,shape_type,shape_dimension,bubble_colour,bubble_linethickness):
     if shape_type==1: #1=rectangle/square
         for k in matr:
-            imgoutput=cv2.rectangle(img,(k[0],k[1]),(k[0]+shape_dimension[0],k[1]+shape_dimension[1]),bubble_colour,bubble_linethickness)
+            imgoutput=cv2.rectangle(img,(k[0]-shape_dimension[0]/2,k[1]-shape_dimension[1]/2),(k[0]+shape_dimension[0]/2,k[1]+shape_dimension[1]/2),bubble_colour,bubble_linethickness)
     elif shape_type==2: #2=circle
         for k in matr:
             imgoutput=cv2.circle(img,(k[0],k[1]),int(shape_dimension[0]),bubble_colour,bubble_linethickness)
