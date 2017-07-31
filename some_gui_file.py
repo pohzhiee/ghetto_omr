@@ -1,7 +1,6 @@
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-
+from gi.repository import Gtk, Gdk
 #arbitrary stuff
 class grid1(Gtk.Grid):
     def __init__(self,parent):
@@ -74,12 +73,12 @@ class grid1(Gtk.Grid):
         dialog.destroy()
 
 
-
 class content_grid2(Gtk.Grid):
     def __init__(self,maingrid):
         Gtk.Grid.__init__(self)
-        imgbox = img_box(self)
+        self.maingrid=maingrid
 
+        imgbox = img_box(self)
         self.attach(imgbox,0,0,1,1)
         self.set_hexpand(True)
 
@@ -88,27 +87,44 @@ class img_box(Gtk.Box):
         Gtk.Box.__init__(self)
         someimg=Gtk.Image.new_from_icon_name("filenew",Gtk.IconSize.MENU)
         self.add(someimg)
-        self.set_size_request(400,800)
+        self.win_width = contentgrid2.maingrid.window.win_width
+        self.win_height = contentgrid2.maingrid.window.win_height
+        wid = self.win_width*0.7
+        hei = self.win_height*0.8
+        print wid
+        print hei
+        print "-----------------------------"
+        self.set_size_request(wid,hei)
 
 class steps_box(Gtk.VBox):
     def __init__(self,maingrid):
         Gtk.VBox.__init__(self)
+
         btn1=Gtk.Button()
         btn1.set_image(Gtk.Image.new_from_icon_name("filenew",Gtk.IconSize.DIALOG))
-        btn1.set_size_request(250,800)
-        self.pack_start(btn1,False,False,0)
+        btn1.set_name("button1")
+        self.pack_end(btn1,False,False,0)
+        self.set_center_widget(btn1)
+
+        self.win_width = maingrid.window.win_width
+        self.win_height = maingrid.window.win_height
+        wid = self.win_width * 0.1
+        hei = self.win_height
+        print wid
+        print hei
+        print "-----------------------------"
+        self.set_size_request(wid, hei)
 
 
 class maingrid(Gtk.Grid):
-    def __init__(self,parent):
+    def __init__(self,window):
         Gtk.Grid.__init__(self)
+        self.window = window
         self.set_column_spacing(25)
 
         #arbitrary initialisations for underdeveloped stuff
         stepsbox = steps_box(self)
         contentgrid = content_grid2(self)
-
-
 
         #end of arbitary stuff
         self.attach(stepsbox,0,0,1,1)
@@ -116,14 +132,28 @@ class maingrid(Gtk.Grid):
 
 
 class mainwin(Gtk.Window):
-    def __init__(self):
+    def __init__(self,screen):
         Gtk.Window.__init__(self,title="Ghetto OMR")
-        main = maingrid(self)
-        self.add(main)
+        curr_screen=screen.get_active_window()
+        self.win_height=curr_screen.get_height()
+        self.win_width = curr_screen.get_width()
+        self.set_screen(screen)
+        self.resize(self.win_width,self.win_height)
         self.maximize()
 
 
-win = mainwin()
+        main = maingrid(self)
+        self.add(main)
+
+
+
+cssProvider = Gtk.CssProvider()
+cssProvider.load_from_path('style.css')
+screen = Gdk.Screen.get_default()
+styleContext = Gtk.StyleContext()
+styleContext.add_provider_for_screen(screen, cssProvider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
+# With the others GTK_STYLE_PROVIDER_PRIORITY values get the same result
+win = mainwin(screen)
 win.connect("delete-event",Gtk.main_quit)
 win.show_all()
 Gtk.main()

@@ -1,0 +1,110 @@
+/* Apply round borders */
+
+.notebook,
+.button,
+.entry {
+  border-radius: 3;
+  border-style: solid;
+  border-width: 1;
+}
+
+
+/* Add some gradients */
+
+.menubar,
+.toolbar {
+  border-width: 0;
+  background-image: -gtk-gradient (linear,
+                                   left top, left bottom,
+                                   from (@bg_color),
+                                   to (shade (@bg_color, 0.95)));
+}
+
+.button:hover,
+.menu:hover,
+.menubar:hover {
+  background-image: -gtk-gradient (linear,
+                                   left top, left bottom,
+                                   from (shade (#ffaaaa, 1.1)),
+                                   color-stop (0.8, shade (#ffaaaa, 0.9)),
+                                   color-stop (0.8, shade (#ffaaaa, 0.8)),
+                                   to (shade (#ffaaaa, 0.7)));
+}
+
+/* Theme scrollbars */
+
+/* Gradient for vertical scrollbars'
+ * sliders, from left to right
+ */
+.slider.vertical {
+  background-image: -gtk-gradient (linear,
+                                   left top, right top,
+                                   from (mix (shade (@bg_color, 0.9), @selected_bg_color, 0.3)),
+                                   to (mix (@bg_color, @selected_bg_color, 0.3)));
+}
+
+.slider.vertical:hover {
+  background-image: -gtk-gradient (linear,
+                                   left top, right top,
+                                   from (shade (@selected_bg_color, 0.9)),
+                                   to (@selected_bg_color));
+}
+
+/* Now horizontal scrollbars',
+ * from top to bottom
+ */
+.slider.horizontal {
+  background-image: -gtk-gradient (linear,
+                                   left top, left bottom,
+                                   from (shade (@bg_color, 0.9)),
+                                   to (@bg_color));
+}
+
+.slider.horizontal:hover {
+  background-image: -gtk-gradient (linear,
+                                   left top, left bottom,
+                                   from (shade (@selected_bg_color, 0.9)),
+                                   to (@selected_bg_color));
+}
+
+.trough {
+  background-image: -gtk-gradient (radial,
+                                   center center, 0,
+                                   center center, 1,
+                                   from (@bg_color),
+                                   to (shade (@bg_color, 0.8)));
+}
+
+GtkScrollbar.button {
+  border-width: 0;
+
+  /* Override any background with
+   * a full transparent color
+   */
+  background-image: none;
+  background-color: rgba (0, 0, 0, 0);
+}
+
+
+/* Theme treeview rows */
+
+GtkTreeView row {
+  border-width: 0;
+  border-radius: 0;
+}
+
+GtkTreeView row:selected:focused {
+  background-image: -gtk-gradient (linear,
+                                   left top, left bottom,
+                                   from (@selected_bg_color),
+                                   to (shade (@selected_bg_color, 1.4)));
+}
+
+/* Add some animations */
+GtkButton:hover {
+  transition: 100ms linear;
+}
+
+GtkCheckButton:active {
+  transition: 250ms ease-in-out;
+}

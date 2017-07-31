@@ -1,0 +1,12 @@
+GtkEntry.invalid {
+    background-color: #ff6666;
+    background: #ff6666;
+}
+
+GtkButton {
+    engine: none;
+    background-color: inherit;
+    background: inherit;
+    color: red;
+}
+
