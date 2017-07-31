@@ -1,86 +1,113 @@
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
-import gtk
+from gi.repository import Gtk, Gdk, GdkPixbuf
 
-class FileChooserWindow(Gtk.Window):
+(TARGET_ENTRY_TEXT, TARGET_ENTRY_PIXBUF) = range(2)
+(COLUMN_TEXT, COLUMN_PIXBUF) = range(2)
+
+DRAG_ACTION = Gdk.DragAction.COPY
+
+class DragDropWindow(Gtk.Window):
+
     def __init__(self):
-        Gtk.Window.__init__(self, title="FileChooser Example")
-        self.fold_str = None
-        self.grid = Gtk.Grid(column_homogeneous=False,
-                         column_spacing=10,
-                         row_spacing=0)
-        self.add(self.grid)
+        Gtk.Window.__init__(self, title="Drag and Drop Demo")
 
-        button1 = Gtk.Button("Choose File")
-        button1.connect("clicked", self.on_file_clicked)
-        self.grid.add(button1)
+        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=6)
+        self.add(vbox)
 
-        self.text_file = Gtk.Entry()
-        self.grid.attach(self.text_file,1,0,4,1)
+        hbox = Gtk.Box(spacing=12)
+        vbox.pack_start(hbox, True, True, 0)
 
-        button2 = Gtk.Button("Choose Folder")
-        button2.connect("clicked", self.on_folder_clicked)
-        self.grid.attach_next_to(button2,button1,Gtk.PositionType.BOTTOM,1,1)
+        self.iconview = DragSourceIconView()
+        self.drop_area = DropArea()
+
+        hbox.pack_start(self.iconview, True, True, 0)
+        hbox.pack_start(self.drop_area, True, True, 0)
+
+        button_box = Gtk.Box(spacing=6)
+        vbox.pack_start(button_box, True, False, 0)
+
+        image_button = Gtk.RadioButton.new_with_label_from_widget(None,
+            "Images")
+        image_button.connect("toggled", self.add_image_targets)
+        button_box.pack_start(image_button, True, False, 0)
+
+        text_button = Gtk.RadioButton.new_with_label_from_widget(image_button,
+            "Text")
+        text_button.connect("toggled", self.add_text_targets)
+        button_box.pack_start(text_button, True, False, 0)
+
+        self.add_image_targets()
+
+    def add_image_targets(self, button=None):
+        targets = Gtk.TargetList.new([])
+        targets.add_image_targets(TARGET_ENTRY_PIXBUF, True)
+
+        self.drop_area.drag_dest_set_target_list(targets)
+        self.iconview.drag_source_set_target_list(targets)
+
+    def add_text_targets(self, button=None):
+        self.drop_area.drag_dest_set_target_list(None)
+        self.iconview.drag_source_set_target_list(None)
+
+        self.drop_area.drag_dest_add_text_targets()
+        self.iconview.drag_source_add_text_targets()
+
+class DragSourceIconView(Gtk.IconView):
+
+    def __init__(self):
+        Gtk.IconView.__init__(self)
+        self.set_text_column(COLUMN_TEXT)
+        self.set_pixbuf_column(COLUMN_PIXBUF)
+
+        model = Gtk.ListStore(str, GdkPixbuf.Pixbuf)
+        self.set_model(model)
+        self.add_item("Item 1", "image-missing")
+        self.add_item("Item 2", "help-about")
+        self.add_item("Item 3", "edit-copy")
+
+        self.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, [],
+            DRAG_ACTION)
+        self.connect("drag-data-get", self.on_drag_data_get)
+
+    def on_drag_data_get(self, widget, drag_context, data, info, time):
+        selected_path = self.get_selected_items()[0]
+        selected_iter = self.get_model().get_iter(selected_path)
+
+        if info == TARGET_ENTRY_TEXT:
+            text = self.get_model().get_value(selected_iter, COLUMN_TEXT)
+            data.set_text(text, -1)
+        elif info == TARGET_ENTRY_PIXBUF:
+            pixbuf = self.get_model().get_value(selected_iter, COLUMN_PIXBUF)
+            data.set_pixbuf(pixbuf)
+
+    def add_item(self, text, icon_name):
+        pixbuf = Gtk.IconTheme.get_default().load_icon(icon_name, 16, 0)
+        self.get_model().append([text, pixbuf])
 
 
-        self.text_folder = Gtk.Entry()
-        self.grid.attach(self.text_folder,1,1,4,1)
+class DropArea(Gtk.Label):
 
-    def on_file_clicked(self, widget):
-        dialog = Gtk.FileChooserDialog("Please choose a file", self,
-            Gtk.FileChooserAction.OPEN,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-             Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+    def __init__(self):
+        Gtk.Label.__init__(self, "Drop something on me!")
+        self.drag_dest_set(Gtk.DestDefaults.ALL, [], DRAG_ACTION)
 
-        self.add_filters(dialog)
+        self.connect("drag-data-received", self.on_drag_data_received)
 
-        response = dialog.run()
-        if response == Gtk.ResponseType.OK:
-            print("Open clicked")
-            print("File selected: " + dialog.get_filename())
-            self.text_file.set_text(dialog.get_filename())
-        elif response == Gtk.ResponseType.CANCEL:
-            print("Cancel clicked")
+    def on_drag_data_received(self, widget, drag_context, x,y, data,info, time):
+        if info == TARGET_ENTRY_TEXT:
+            text = data.get_text()
+            print("Received text: %s" % text)
 
-        dialog.destroy()
+        elif info == TARGET_ENTRY_PIXBUF:
+            pixbuf = data.get_pixbuf()
+            width = pixbuf.get_width()
+            height = pixbuf.get_height()
 
-    def add_filters(self, dialog):
-        filter_text = Gtk.FileFilter()
-        filter_text.set_name("Text files")
-        filter_text.add_mime_type("text/plain")
-        dialog.add_filter(filter_text)
+            print("Received pixbuf with width %spx and height %spx" % (width,
+                height))
 
-        filter_py = Gtk.FileFilter()
-        filter_py.set_name("Python files")
-        filter_py.add_mime_type("text/x-python")
-        dialog.add_filter(filter_py)
-
-        filter_any = Gtk.FileFilter()
-        filter_any.set_name("Any files")
-        filter_any.add_pattern("*")
-        dialog.add_filter(filter_any)
-
-    def on_folder_clicked(self, widget):
-        dialog = Gtk.FileChooserDialog("Please choose a folder", self,
-            Gtk.FileChooserAction.SELECT_FOLDER,
-            (Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL,
-             "Select", Gtk.ResponseType.OK))
-        dialog.set_default_size(800, 400)
-
-        response = dialog.run()
-        if response == Gtk.ResponseType.OK:
-            print("Select clicked")
-            str1 = "Folder selected: " + dialog.get_filename()
-            print(str1)
-            self.fold_str = str1
-            self.text_folder.set_text(dialog.get_filename())
-        elif response == Gtk.ResponseType.CANCEL:
-            print("Cancel clicked")
-
-        dialog.destroy()
-win = FileChooserWindow()
+win = DragDropWindow()
 win.connect("delete-event", Gtk.main_quit)
-win.maximize()
 win.show_all()
 Gtk.main()
