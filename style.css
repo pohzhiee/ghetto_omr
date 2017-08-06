@@ -8,5 +8,41 @@ GtkButton {
     background-color: inherit;
     background: inherit;
     color: red;
+    border-top-width: 5px;
+    border-right-width: 10px;
+    border-right-style: solid;
+    border-left-style: solid;
+    border-right-color: rgb(0,255,0);
+    border-left-color: rgb(255,255,0);
+
 }
 
+/*GtkBox {*/
+    /*border-top-width: 3px;*/
+    /*border-right-width: 5px;*/
+    /*border-top-color: rgb(128,57,0);*/
+/*}*/
+
+GtkBox{
+    /*border-width: 5px;*/
+    /*border-style: solid;*/
+    /*!*border-right-color: rgb(255,0,0);*!*/
+    /*!*border-left-color: rgb(255,0,0);*!*/
+    /*!*border-bottom-color: rgb(255,0,0);*!*/
+    /*!*border-top-color: rgb(255,0,0);*!*/
+    /*border-color: rgb(0,0,0)*/
+    background-color: rgb(237,237,237)
+}
+
+GtkGrid{
+    background-color: rgb(0,0,0)
+}
+
+#obj1 {
+    border-top-width: 5px;
+    border-right-width: 10px;
+    border-right-style: solid;
+    border-left-style: solid;
+    border-right-color: rgb(0,255,0);
+    border-left-color: rgb(0,255,0);
+}

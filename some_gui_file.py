@@ -74,12 +74,12 @@ class grid1(Gtk.Grid):
 
 
 class content_grid2(Gtk.Grid):
-    def __init__(self,maingrid):
+    def __init__(self,MainGrid):
         Gtk.Grid.__init__(self)
-        self.maingrid=maingrid
+        self.MainGrid=MainGrid
 
-        imgbox = img_box(self)
-        self.attach(imgbox,0,0,1,1)
+        self.imgbox = img_box(self)
+        self.attach(self.imgbox,0,0,1,1)
         self.set_hexpand(True)
 
 class img_box(Gtk.Box):
@@ -87,74 +87,104 @@ class img_box(Gtk.Box):
         Gtk.Box.__init__(self)
         someimg=Gtk.Image.new_from_icon_name("filenew",Gtk.IconSize.MENU)
         self.add(someimg)
-        self.win_width = contentgrid2.maingrid.window.win_width
-        self.win_height = contentgrid2.maingrid.window.win_height
-        wid = self.win_width*0.7
-        hei = self.win_height*0.8
-        print wid
-        print hei
-        print "-----------------------------"
-        self.set_size_request(wid,hei)
+        # self.win_width = contentgrid2.MainGrid.window.win_width
+        # self.win_height = contentgrid2.MainGrid.window.win_height
+        # # wid = self.win_width*0.7
+        # # hei = self.win_height*0.8
+        # # print wid
+        # # print hei
+        # # print "-----------------------------"
+        # # self.set_size_request(wid,hei)
 
 class steps_box(Gtk.VBox):
-    def __init__(self,maingrid):
+    def __init__(self,MainGrid):
         Gtk.VBox.__init__(self)
 
-        btn1=Gtk.Button()
-        btn1.set_image(Gtk.Image.new_from_icon_name("filenew",Gtk.IconSize.DIALOG))
-        btn1.set_name("button1")
-        self.pack_end(btn1,False,False,0)
-        self.set_center_widget(btn1)
+        self.btn1=Gtk.Button()
+        self.btn1.set_image(Gtk.Image.new_from_icon_name("filenew",Gtk.IconSize.DIALOG))
+        self.btn1.set_name("button1")
+        self.add(self.btn1)
+        #
+        # self.win_width = MainGrid.window.win_width
+        # self.win_height = MainGrid.window.win_height
+        # wid = self.win_width * 0.1
+        # hei = self.win_height
+        # print "requested width: ",wid
+        # print "requested height: ",hei
+        # print "-----------------------------"
+        # self.set_size_request(wid, hei)
 
-        self.win_width = maingrid.window.win_width
-        self.win_height = maingrid.window.win_height
-        wid = self.win_width * 0.1
-        hei = self.win_height
-        print wid
-        print hei
-        print "-----------------------------"
-        self.set_size_request(wid, hei)
 
-
-class maingrid(Gtk.Grid):
+class MainGrid(Gtk.Grid):
     def __init__(self,window):
         Gtk.Grid.__init__(self)
         self.window = window
         self.set_column_spacing(25)
 
         #arbitrary initialisations for underdeveloped stuff
-        stepsbox = steps_box(self)
-        contentgrid = content_grid2(self)
+        self.stepsbox = steps_box(self)
+        self.contentgrid = content_grid2(self)
 
         #end of arbitary stuff
-        self.attach(stepsbox,0,0,1,1)
-        self.attach_next_to(contentgrid,stepsbox,Gtk.PositionType.RIGHT,1,1)
+        self.attach(self.stepsbox,0,0,1,1)
+        self.attach_next_to(self.contentgrid,self.stepsbox,Gtk.PositionType.RIGHT,1,1)
+        self.name = "HELLO"
 
 
 class mainwin(Gtk.Window):
-    def __init__(self,screen):
+    def __init__(self):
         Gtk.Window.__init__(self,title="Ghetto OMR")
-        curr_screen=screen.get_active_window()
-        self.win_height=curr_screen.get_height()
-        self.win_width = curr_screen.get_width()
-        self.set_screen(screen)
-        self.resize(self.win_width,self.win_height)
+        self.set_resizable(True)
+        self.connect("configure-event",self.new_dim)
+        self.connect("delete-event",Gtk.main_quit)
+
+        self.win_width = 200
+        self.win_height = 200
+
+        something = Gtk.Label("SOMETHING")
         self.maximize()
+        self.count =0
 
 
-        main = maingrid(self)
-        self.add(main)
+        self.main = MainGrid(self)
+        self.add(self.main)
+        #
+        # self.main.destroy()
+        # self.main = Gtk.Label("SOMETHING")
+        # self.add(self.main)
+
+    def new_dim(self,widget,para):
+        self.win_height = para.height
+        self.win_width = para.width
+        # print "---------------"
+        # print "window type:", widget.get_window_type()
+        # print "---------------------------------------"
+        # self.count = self.count+1
+        # print "count: ", self.count
+        # print "-------"
+        self.main.stepsbox.set_size_request(0.1*self.win_width,self.win_height)
+        self.main.contentgrid.imgbox.set_size_request(0.7*self.win_width,0.7*self.win_height)
+        # self.destroy_widgets()
+        # self.create_widgets()
+
+    def destroy_widgets(self):
+        self.main.destroy()
+
+    def create_widgets(self):
+        self.main = Gtk.Label("SOMETHING")
+        self.add(self.main)
 
 
 
+
+#
 cssProvider = Gtk.CssProvider()
 cssProvider.load_from_path('style.css')
 screen = Gdk.Screen.get_default()
 styleContext = Gtk.StyleContext()
 styleContext.add_provider_for_screen(screen, cssProvider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
 # With the others GTK_STYLE_PROVIDER_PRIORITY values get the same result
-win = mainwin(screen)
-win.connect("delete-event",Gtk.main_quit)
+win = mainwin()
 win.show_all()
 Gtk.main()
 
