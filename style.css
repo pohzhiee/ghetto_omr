@@ -28,9 +28,26 @@ GtkRadioButton.radio{
     color:#ff00ff;
 }
 
-.toggleasd {
-    background-color:#000000;
+GtkRadioButton:hover{
+    background-color:#ffff00;
 }
+.button:active{
+     background-image: -gtk-gradient (linear,
+                                   left top, left bottom,
+                                   from (shade (#ffaaaa, 1.0)),
+                                   color-stop (0.8, shade (#ffaaaa, 0.9)),
+                                   color-stop (0.8, shade (#ffaaaa, 0.8)),
+                                   to (shade (#ffaaaa, 0.7)));
+}
+
+
+.toggleasd {
+     background-image: -gtk-gradient (linear,
+                                   left top, left bottom,
+                                   from (shade (#ffaaaa, 1.0)),
+                                   color-stop (0.8, shade (#ffaaaa, 0.9)),
+                                   color-stop (0.8, shade (#ffaaaa, 0.8)),
+                                   to (shade (#ffaaaa, 0.7)));}
 
 /*GtkToggleButton {*/
     /*background-color: #ff6666;*/

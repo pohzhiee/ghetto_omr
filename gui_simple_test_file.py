@@ -1,6 +1,6 @@
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk,Gdk
+from gi.repository import Gtk,Gdk,GdkPixbuf as pixbuf
 
 class RadioButtonWindow(Gtk.Window):
 
@@ -11,9 +11,14 @@ class RadioButtonWindow(Gtk.Window):
         hbox = Gtk.Box(spacing=6)
         self.add(hbox)
 
-        button1 = Gtk.RadioButton.new_with_label_from_widget(None, "Button 1")
+        button1 = Gtk.RadioButton.new(None)
         button1.connect("toggled", self.on_button_toggled, "1")
         button1.set_mode(False)
+        pix = pixbuf.Pixbuf.new_from_file("icons/facebook.svg")
+        pix1=pix.scale_simple(20,20,pixbuf.InterpType.BILINEAR)
+        img = Gtk.Image.new_from_pixbuf(pix1)
+        button1.set_image(img)
+        button1.set_relief(Gtk.ReliefStyle.NONE)
         # button1.do_draw_indicator(False,False)
         hbox.pack_start(button1, False, False, 0)
 
