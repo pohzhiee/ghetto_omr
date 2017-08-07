@@ -11,7 +11,7 @@ class buttontest(Gtk.Button):
         self.set_image(self.img)
         self.connect("clicked",self.on_file_clicked)
     def on_file_clicked(self,widget1):
-        print "clicked"
+        print ("clicked")
 
 class Dash(Gtk.Notebook):
     def __init__(self):
@@ -50,7 +50,7 @@ class Tab(Gtk.Box):
         self.show_all()
 
     def close_cb(self,widget):
-        print "CLOSE CLICKED"
+        print ("CLOSE CLICKED")
         self.parent.tab_count=self.parent.tab_count-1
         self.destroy()
 

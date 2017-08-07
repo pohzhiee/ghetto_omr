@@ -3,10 +3,10 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk, Gdk
 
 def print_size(widget, data=None):
-    print widget.get_size()
+    print (widget.get_size())
 
 def delete_event(widget, data=None):
-    print widget.get_size()
+    print (widget.get_size())
     return False
 
 def destroy(widget, data=None):

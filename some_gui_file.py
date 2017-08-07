@@ -81,6 +81,7 @@ class content_grid2(Gtk.Grid):
         self.imgbox = img_box(self)
         self.attach(self.imgbox,0,0,1,1)
         self.set_hexpand(True)
+        self.set_valign(Gtk.Align(3))
 
 class img_box(Gtk.Box):
     def __init__(self,contentgrid2):

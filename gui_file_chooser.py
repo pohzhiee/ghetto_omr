@@ -12,7 +12,7 @@ class buttontest(Gtk.Button):
         self.set_image(self.img)
         self.connect("clicked",self.on_file_clicked)
     def on_file_clicked(self,widget1):
-        print "clicked"
+        print ("clicked")
 class MainWindow(Gtk.Window):
     def __init__(self):
         Gtk.Window.__init__(self, title="FileChooser Example")

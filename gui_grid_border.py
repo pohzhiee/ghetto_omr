@@ -12,9 +12,10 @@ class filler_cont(Gtk.Box):
     def __init__(self,str1,str2):
         Gtk.Box.__init__(self)
         self.str = str(str1)+","+str(str2)
-        button1 = Gtk.Button()
+        button1 = Gtk.ToggleButton()
         button1.set_label(self.str)
         button1.connect("clicked",self.btn_clicked)
+        button1.set_relief(Gtk.ReliefStyle.NONE)
         self.set_center_widget(button1)
     def btn_clicked(self,widget):
         print (self.str," was clicked")
@@ -58,5 +59,6 @@ styleContext = Gtk.StyleContext()
 styleContext.add_provider_for_screen(screen, cssProvider,Gtk.STYLE_PROVIDER_PRIORITY_USER)
 # With the others GTK_STYLE_PROVIDER_PRIORITY values get the same result
 win = mainwin()
+win.connect("delete-event",Gtk.main_quit)
 win.show_all()
 Gtk.main()
