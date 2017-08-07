@@ -14,10 +14,19 @@ class filler_cont(Gtk.Box):
         self.str = str(str1)+","+str(str2)
         button1 = Gtk.ToggleButton()
         button1.set_label(self.str)
-        button1.connect("clicked",self.btn_clicked)
+        button1.connect("toggled",self.on_button_toggled)
         button1.set_relief(Gtk.ReliefStyle.NONE)
         self.set_center_widget(button1)
-    def btn_clicked(self,widget):
+    def on_button_toggled(self, button):
+            if button.get_active():
+                state = "on"
+                Gtk.StyleContext.add_class(button.get_style_context(), "toggleasd")
+            else:
+                state = "off"
+                Gtk.StyleContext.remove_class(button.get_style_context(),"toggleasd")
+            print(self.str, "was turned", state)
+
+    def btn_toggled(self,widget):
         print (self.str," was clicked")
         print ("------------")
     

@@ -3,46 +3,39 @@ GtkEntry.invalid {
     background: #ff6666;
 }
 
-GtkButton {
-    engine: none;
-    background-color: inherit;
-    background: inherit;
-    color: red;
-    border-top-width: 5px;
-    border-right-width: 10px;
-    border-right-style: solid;
-    border-left-style: solid;
-    border-right-color: rgb(0,255,0);
-    border-left-color: rgb(255,255,0);
+/*GtkButton {*/
+    /*engine: none;*/
+    /*background-color: inherit;*/
+    /*background: inherit;*/
+    /*color: red;*/
+    /*border-top-width: 5px;*/
+    /*border-right-width: 10px;*/
+    /*border-right-style: solid;*/
+    /*border-left-style: solid;*/
+    /*border-right-color: rgb(0,255,0);*/
+    /*border-left-color: rgb(255,255,0);*/
 
-}
-
-/*GtkBox {*/
-    /*border-top-width: 3px;*/
-    /*border-right-width: 5px;*/
-    /*border-top-color: rgb(128,57,0);*/
 /*}*/
 
-GtkBox{
-    /*border-width: 5px;*/
-    /*border-style: solid;*/
-    /*!*border-right-color: rgb(255,0,0);*!*/
-    /*!*border-left-color: rgb(255,0,0);*!*/
-    /*!*border-bottom-color: rgb(255,0,0);*!*/
-    /*!*border-top-color: rgb(255,0,0);*!*/
-    /*border-color: rgb(0,0,0)*/
-    background-color: rgb(237,237,237)
+
+
+GtkRadioButton:active{
+    background-color: #ff6666;
 }
 
-GtkGrid{
-    background-color: rgb(0,0,0)
+GtkRadioButton.radio{
+    background-color:#ff00ff;
+    color:#ff00ff;
 }
 
-#obj1 {
-    border-top-width: 5px;
-    border-right-width: 10px;
-    border-right-style: solid;
-    border-left-style: solid;
-    border-right-color: rgb(0,255,0);
-    border-left-color: rgb(0,255,0);
+.toggleasd {
+    background-color:#000000;
 }
+
+/*GtkToggleButton {*/
+    /*background-color: #ff6666;*/
+/*}*/
+
+/*GtkToggleButton:hover {*/
+    /*background-color: #ffffff;*/
+/*}*/
