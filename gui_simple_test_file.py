@@ -58,7 +58,7 @@ class RadioButtonWindow(Gtk.Window):
         else:
             state = "off"
             Gtk.StyleContext.remove_class(button.get_style_context(),"toggleasd")
-        print("Button", name, "was turned", state)
+        # print("Button", name, "was turned", state)
 
 cssProvider = Gtk.CssProvider()
 cssProvider.load_from_path('style.css')
