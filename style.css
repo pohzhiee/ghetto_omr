@@ -28,15 +28,16 @@ GtkRadioButton.radio{
     color:#ff00ff;
 }
 
-GtkRadioButton:hover{
-    background-color:#ffff00;
+GtkRadioButton:focus{
+     background-image: -gtk-gradient (linear,
+                                   left top, left bottom,
+                                   from (shade (#ffffff, 0.9)),
+                                   to (shade (#ffaaaa, 0.9)));
 }
 .button:active{
      background-image: -gtk-gradient (linear,
                                    left top, left bottom,
                                    from (shade (#ffaaaa, 1.0)),
-                                   color-stop (0.8, shade (#ffaaaa, 0.9)),
-                                   color-stop (0.8, shade (#ffaaaa, 0.8)),
                                    to (shade (#ffaaaa, 0.7)));
 }
 
@@ -44,10 +45,9 @@ GtkRadioButton:hover{
 .toggleasd {
      background-image: -gtk-gradient (linear,
                                    left top, left bottom,
-                                   from (shade (#ffaaaa, 1.0)),
-                                   color-stop (0.8, shade (#ffaaaa, 0.9)),
-                                   color-stop (0.8, shade (#ffaaaa, 0.8)),
-                                   to (shade (#ffaaaa, 0.7)));}
+                                   from (shade (#ffffff, 1.0)),
+                                   to (shade (#ffaaaa, 1.0)));
+}
 
 /*GtkToggleButton {*/
     /*background-color: #ff6666;*/
