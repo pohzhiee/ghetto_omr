@@ -9,7 +9,15 @@ class RadioButtonWindow(Gtk.Window):
         self.set_border_width(10)
 
         hbox = Gtk.Box(spacing=6)
-        self.add(hbox)
+        self.grid = Gtk.Grid()
+        self.textspace1 = Gtk.Entry()
+        self.textspace2 = Gtk.Entry()
+        self.grid.attach(hbox,0,0,1,1)
+        self.grid.attach(self.textspace1,0,1,1,1)
+        self.grid.attach_next_to(self.textspace2,self.textspace1,Gtk.PositionType.BOTTOM,1,1)
+        self.add(self.grid)
+
+        self.textstr = ""
 
         button1 = Gtk.RadioButton.new(None)
         button1.connect("toggled", self.on_button_toggled, "1")
@@ -48,7 +56,7 @@ class RadioButtonWindow(Gtk.Window):
         pix1=pix.scale_simple(40,40,pixbuf.InterpType.BILINEAR)
         img = Gtk.Image.new_from_pixbuf(pix1)
         button4.set_image(img)
-        button4.connect("toggled", self.on_button_toggled,"CHECK")
+        button4.connect("toggled", self.on_button_toggled,"4")
         hbox.pack_start(button4,False,False,0)
 
     def on_button_toggled(self, button, name):
@@ -58,6 +66,10 @@ class RadioButtonWindow(Gtk.Window):
         else:
             state = "off"
             Gtk.StyleContext.remove_class(button.get_style_context(),"toggleasd")
+        textbuf = self.textstr
+        self.textstr = "Button {} was turned {}".format(name,state)
+        self.textspace1.set_text(textbuf)
+        self.textspace2.set_text(self.textstr)
         # print("Button", name, "was turned", state)
 
 cssProvider = Gtk.CssProvider()
