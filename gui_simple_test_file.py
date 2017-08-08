@@ -36,6 +36,7 @@ class RadioButtonWindow(Gtk.Window):
         pix1=pix.scale_simple(40,40,pixbuf.InterpType.BILINEAR)
         img = Gtk.Image.new_from_pixbuf(pix1)
         button2.set_image(img)
+        button2.set_relief(Gtk.ReliefStyle.NONE)
         button2.connect("toggled", self.on_button_toggled, "2")
         hbox.pack_start(button2, False, False, 0)
 
@@ -46,6 +47,7 @@ class RadioButtonWindow(Gtk.Window):
         pix1=pix.scale_simple(40,40,pixbuf.InterpType.BILINEAR)
         img = Gtk.Image.new_from_pixbuf(pix1)
         button3.set_image(img)
+        button3.set_relief(Gtk.ReliefStyle.NONE)
         button3.connect("toggled", self.on_button_toggled, "3")
         hbox.pack_start(button3, False, False, 0)
 
@@ -56,6 +58,7 @@ class RadioButtonWindow(Gtk.Window):
         pix1=pix.scale_simple(40,40,pixbuf.InterpType.BILINEAR)
         img = Gtk.Image.new_from_pixbuf(pix1)
         button4.set_image(img)
+        button4.set_relief(Gtk.ReliefStyle.NONE)
         button4.connect("toggled", self.on_button_toggled,"4")
         hbox.pack_start(button4,False,False,0)
 
