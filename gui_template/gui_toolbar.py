@@ -45,7 +45,7 @@ class toolbutton(Gtk.RadioButton):
         self.set_mode(False)
         self.set_relief(Gtk.ReliefStyle.NONE)
 
-        file_path = "icons/" +name + ".svg"
+        file_path = "../icons/" +name + ".svg"
         pix = GdkPixbuf.Pixbuf.new_from_file(file_path)
         pix1=pix.scale_simple(35,35,GdkPixbuf.InterpType.BILINEAR)
         img = Gtk.Image.new_from_pixbuf(pix1)
@@ -90,7 +90,7 @@ class mainwin(Gtk.Window):
         self.add(somegrid)
 
 cssProvider = Gtk.CssProvider()
-cssProvider.load_from_path('gui_template/tool_button.css')
+cssProvider.load_from_path('tool_button.css')
 screen = Gdk.Screen.get_default()
 styleContext = Gtk.StyleContext()
 styleContext.add_provider_for_screen(screen, cssProvider,Gtk.STYLE_PROVIDER_PRIORITY_USER)

@@ -21,10 +21,14 @@ GtkRadioButton:active{
                                    to (shade (#ffaaaa, 0.7)));
 }
 
+GtkLabel {
+    font-size:50px;
+}
 
-.toggleasd {
+.highlighted {
      background-image: -gtk-gradient (linear,
                                    left top, left bottom,
-                                   from (shade (#ffffff, 1.0)),
-                                   to (shade (#ffaaaa, 1.0)));
+                                   from (shade (#ffaaaa, 1.0)),
+                                   color-stop (0.3, shade (#ff5555, 1.0)),
+                                   to (shade (#ff0000, 1.0)));
 }
